@@ -5,4 +5,70 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#E5E5E5"
-    tools:context=".MainActivity"/>
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="288dp"
+        android:layout_height="63dp"
+        android:layout_marginTop="282dp"
+        android:backgroundTint="#FFD200"
+        android:fontFamily="@font/poppins_bold"
+        android:text="@string/add_meals_to_db"
+        android:textColor="#0C0C0C"
+        android:textSize="20sp"
+        app:cornerRadius="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/search_by_ing_button"
+        android:layout_width="288dp"
+        android:layout_height="77dp"
+        android:layout_marginTop="35dp"
+        android:backgroundTint="#FFD200"
+        android:fontFamily="@font/poppins_bold"
+        android:text="@string/search_for_meals_by_ingredient"
+        android:textColor="#0C0C0C"
+        android:textSize="20sp"
+        app:cornerRadius="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_button" />
+
+    <Button
+        android:id="@+id/search_meal_button"
+        android:layout_width="288dp"
+        android:layout_height="63dp"
+        android:layout_marginTop="34dp"
+        android:layout_marginBottom="224dp"
+        android:backgroundTint="#FFD200"
+        android:fontFamily="@font/poppins_bold"
+        android:text="@string/search_for_meals"
+        android:textColor="#0C0C0C"
+        android:textSize="20sp"
+        app:cornerRadius="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_by_ing_button" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="23dp"
+        android:fontFamily="@font/poppins_bold"
+        android:text="@string/about_me"
+        android:textColor="#131313"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

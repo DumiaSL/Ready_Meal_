@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Meal_preparation_application</string>
+    <string name="no_waiting_for_food">No waiting for food</string>
+    <string name="search_for_meals_by_ingredient">Search for Meals By Ingredient</string>
+    <string name="add_meals_to_db">Add Meals to DB</string>
+    <string name="about_me">About me</string>
+    <string name="search_for_meals">Search for Meals</string>
 </resources>

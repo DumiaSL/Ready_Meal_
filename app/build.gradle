@@ -43,5 +43,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     implementation "com.airbnb.android:lottie:4.1.0"
+    implementation "androidx.room:room-runtime:2.4.0"
+
 }
 
