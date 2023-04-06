@@ -10,8 +10,11 @@ class Meal {
         @PrimaryKey(autoGenerate = true)
         val id: Int = 0,
         val name: String,
-        val description: String,
-        val calories: Int,
+        var DrinkAlternate: String,
+        var Category: String,
+        var Instructions: String,
+        var MealThumb: String,
+        var ingredients: MutableList<String> = mutableListOf<String>(),
         val imageUrl: String
     )
 
