@@ -1,6 +1,8 @@
 package com.example.meal_preparation_application.classes
 
 import androidx.room.*
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 @Entity(tableName = "meals")
 data class Meals(
@@ -12,12 +14,10 @@ data class Meals(
     @ColumnInfo(name = "area") var area: String? = null,
     @ColumnInfo(name = "instructions") var instructions: String? = null,
     @ColumnInfo(name = "mealThumb") var mealThumb: String? = null,
-//    @TypeConverters(StringListTypeConverter::class)
+    @TypeConverters(StringListTypeConverter::class)
     @ColumnInfo(name = "ingredients") var ingredients: ArrayList<String>? = null,
-//    @TypeConverters(StringListTypeConverter::class)
-//    @ColumnInfo(name = "measure")var measure: List<String>? = null,
-//    var ingredients: String? = null,
-//    var measure: String? = null,
+    @TypeConverters(StringListTypeConverter::class)
+    @ColumnInfo(name = "measure") var measure: ArrayList<String>? = null,
     @ColumnInfo(name = "tags") var tags: String? = null,
     @ColumnInfo(name = "youtube") var youtube: String? = null,
     @ColumnInfo(name = "source") var source: String? = null,
@@ -28,14 +28,17 @@ data class Meals(
 
 class StringListTypeConverter {
     @TypeConverter
-    fun fromString(value: String?): List<String>? {
-        return value?.split(",")?.map { it.trim() }
+    fun fromString(value: String?): ArrayList<String> {
+        val listType = object : TypeToken<ArrayList<String>>() {}.type
+        return Gson().fromJson(value, listType)
     }
 
     @TypeConverter
-    fun toString(value: List<String>?): String? {
-        return value?.joinToString(",")
+    fun toString(value: ArrayList<String?>): String {
+        return Gson().toJson(value)
     }
 }
+
+
 
 

@@ -17,4 +17,10 @@ class Splash_screen : AppCompatActivity() {
             finish()
         }, 2800)
     }
+
+     @Deprecated("Deprecated in Java", ReplaceWith("finish()"))
+     override fun onBackPressed() {
+        finish()
+    }
 }
+
