@@ -1,19 +1,18 @@
 package com.example.meal_preparation_application
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.room.Room
 import com.example.meal_preparation_application.classes.AppDatabase
 import com.example.meal_preparation_application.classes.Meals
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlin.Result.Companion.success
 
 
 class MainActivity : AppCompatActivity() {
@@ -27,7 +26,13 @@ class MainActivity : AppCompatActivity() {
             "mealdatabase").build()
         val mealDao = db.mealDao()
 
-        var addMealsDb = findViewById<Button>(R.id.add_button);
+        var addMealsDb = findViewById<Button>(R.id.add_button)
+        var SB_ngredient=findViewById<Button>(R.id.search_by_ing_button)
+
+        SB_ngredient.setOnClickListener{
+            val intent = Intent(this, Search_By_Ingredient::class.java)
+            startActivity(intent)
+        }
 
         addMealsDb.setOnClickListener {
             runBlocking {

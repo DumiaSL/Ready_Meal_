@@ -5,4 +5,6 @@
     <string name="add_meals_to_db">Add Meals to DB</string>
     <string name="about_me">About me</string>
     <string name="search_for_meals">Search for Meals</string>
+    <string name="food_search_here">Search Food Here</string>
+    <string name="serach">Serach</string>
 </resources>
