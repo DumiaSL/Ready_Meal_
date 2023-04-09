@@ -39,7 +39,7 @@
         android:paddingHorizontal="20dp">
 
         <EditText
-            android:id="@+id/editTextTextPersonName3"
+            android:id="@+id/search_bar"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
@@ -49,11 +49,12 @@
             android:backgroundTint="#F8F0A6"
             android:elevation="20dp"
             android:fontFamily="@font/poppins_medium"
+            android:hint="Seaech Here."
             android:inputType="textPersonName"
             android:textAlignment="center" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/search_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
@@ -62,7 +63,7 @@
             android:layout_marginBottom="20dp"
             android:fontFamily="@font/poppins_bold"
             android:paddingVertical="10dp"
-            android:text="@string/serach"
+            android:text="@string/searchButton"
             android:textStyle="bold"
             app:cornerRadius="20dp" />
     </LinearLayout>

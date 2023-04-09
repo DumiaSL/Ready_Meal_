@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                         tags = "Sweet",
                         youtube =  "https:/www.youtube.com/watch?v=mdaBIhgEAMo",
                         ingredients= arrayListOf<String>("Pork","Egg","Water","Salt","Sugar","Soy Sauce","Starch","Tomato Puree","Vinegar","Coriander"),
-                        measure = arrayListOf<String>("200g","1","Dash","1//2 tsp","1 tsp","10g","10g","30g","10g","Dash")
+                        measure = arrayListOf<String>("200g","1","Dash","1//2 tsp","1 tsp","10g","10g","30g","10g","Dash"),
                     )
 
                     val mealChickenMarengo = Meals(
