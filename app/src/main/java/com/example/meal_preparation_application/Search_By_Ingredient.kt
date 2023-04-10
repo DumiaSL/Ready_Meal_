@@ -7,6 +7,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -19,6 +21,8 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.res.ResourcesCompat
 import androidx.room.Room
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.meal_preparation_application.classes.AppDatabase
 import com.example.meal_preparation_application.classes.MealDao
 import com.example.meal_preparation_application.classes.Meals
@@ -195,10 +199,25 @@ class Search_By_Ingredient : AppCompatActivity() {
                 }
                 contentDescription = context.getString(R.string.app_name)
             }
+            
+            var bitmapDrawable: BitmapDrawable? =null
 
             Glide.with(this)
+                .asBitmap()
                 .load(allMeals[index].mealThumb)
-                .into(imageView)
+                .into(object : CustomTarget<Bitmap>(){
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        imageView.setImageBitmap(resource)
+
+                        bitmapDrawable = BitmapDrawable(resources, resource)
+                    }
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        // this is called when imageView is cleared on lifecycle call or for
+                        // some other reason.
+                        // if you are referencing the bitmap somewhere else too other than this imageView
+                        // clear it here as you can no longer have the bitmap
+                    }
+                })
 
             val mealName = TextView(this).apply {
                 layoutParams = ViewGroup.LayoutParams(
@@ -283,13 +302,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                 val extraMealName = mydialog!!.findViewById<TextView>(R.id.extra_meal_name)
                 val extraMealImage = mydialog!!.findViewById<ImageView>(R.id.extra_meal_image)
                 extraMealName.text = allMeals[index].name
-                // Finally, call the function from your activity or fragment using a coroutine:
-                runBlocking{
-                    launch {
-                        val bitmap = allMeals[index].mealThumb?.let { it1 -> downloadImage(it1) }
-                        extraMealImage.setImageBitmap(bitmap)
-                    }
-                }
+                extraMealImage.setImageDrawable(bitmapDrawable)
                 mydialog!!.show()
             }
 
@@ -349,16 +362,4 @@ class Search_By_Ingredient : AppCompatActivity() {
         }
         return true
     }
-    suspend fun downloadImage(url: String): Bitmap? = withContext(Dispatchers.IO) {
-        var bitmap: Bitmap? = null
-        try {
-            val stream = URL(url).openStream()
-            bitmap = BitmapFactory.decodeStream(stream)
-            stream.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        bitmap
-    }
-
 }
