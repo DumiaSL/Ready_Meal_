@@ -1,20 +1,20 @@
 package com.example.meal_preparation_application
 
+import android.app.Dialog
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.res.ResourcesCompat
 import androidx.room.Room
@@ -30,9 +30,11 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+
 
 class Search_By_Ingredient : AppCompatActivity() {
     var allMeals  = arrayListOf<Meals>();
@@ -41,6 +43,9 @@ class Search_By_Ingredient : AppCompatActivity() {
     lateinit var linearLayout : LinearLayout
     lateinit var mealDao : MealDao
 
+
+    var mydialog: Dialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_by_ingredient)
@@ -48,6 +53,8 @@ class Search_By_Ingredient : AppCompatActivity() {
         val db = Room.databaseBuilder(this, AppDatabase::class.java,
             "mealdatabase").build()
         mealDao = db.mealDao()
+
+        mydialog=Dialog(this)
 
 
         val searchButton = findViewById<Button>(R.id.search_button)
@@ -66,6 +73,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                     }
                 }
             }
+            addDbMeals.isEnabled=false
             val snackbar = Snackbar.make(addDbMeals, "Successfully added all Meals to DB", Snackbar.LENGTH_LONG).setAction("Action", null)
             val snackbarView = snackbar.view
             snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
@@ -78,53 +86,69 @@ class Search_By_Ingredient : AppCompatActivity() {
         }
 
         searchButton.setOnClickListener {
-            //reset meal list
-            allMeals  = arrayListOf<Meals>();
+//            if (searchTextField.text.isNotEmpty()){
+                //reset meal list
+                allMeals  = arrayListOf<Meals>();
+                addDbMeals.isEnabled=true
 
-            //keyboard hide
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(searchTextField.windowToken, 0)
+                //keyboard hide
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(searchTextField.windowToken, 0)
 
-
-            // collecting all the JSON string
-            var stb = StringBuilder()
-            val url_string = "https://www.themealdb.com/api/json/v1/1/search.php?s="+searchTextField.text.toString()
-            val url = URL(url_string)
-            val con: HttpURLConnection = url.openConnection() as HttpURLConnection
-            runBlocking {
-                launch {
-                    // run the code of the coroutine in a new thread
-                    withContext(Dispatchers.IO) {
-                        val bf = BufferedReader(InputStreamReader(con.inputStream))
-                        val line: String? = bf.readLine()
-                         stb.append(line)
-                        if (::linearLayout.isInitialized) {
-                            println("reached")
-                            runOnUiThread {
-                                cardScroll.removeAllViews()
-                                addDbMeals.isEnabled=false
+                // collecting all the JSON string
+                val stb = StringBuilder()
+                val url_string = "https://www.themealdb.com/api/json/v1/1/search.php?s="+searchTextField.text.toString()
+                val url = URL(url_string)
+                val con: HttpURLConnection = url.openConnection() as HttpURLConnection
+                runBlocking {
+                    launch {
+                        // run the code of the coroutine in a new thread
+                        withContext(Dispatchers.IO) {
+                            val bf = BufferedReader(InputStreamReader(con.inputStream))
+                            val line: String? = bf.readLine()
+                            stb.append(line)
+                            if (::linearLayout.isInitialized) {
+                                runOnUiThread {
+                                    cardScroll.removeAllViews()
+                                    addDbMeals.isEnabled=false
+                                }
                             }
-                        }
-                        if (parseJSON(stb)){
-                            //refresh screen
-                            runOnUiThread {
-                                addDbMeals.isEnabled=true
-                                createMealCards()
+                            if (parseJSON(stb)){
+                                //refresh screen
+                                runOnUiThread {
+                                    addDbMeals.isEnabled=true
+                                    createMealCards()
+                                }
+                            }else{
+                                val snackbar = Snackbar.make(searchButton, "No Meals Found !!", Snackbar.LENGTH_LONG).setAction("Action", null)
+                                val snackbarView = snackbar.view
+                                snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
+                                val textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+                                textView.setTextColor(Color.BLACK)
+                                textView.setTypeface(null, Typeface.BOLD)
+                                textView.textSize = 16f
+                                snackbar.show()
                             }
-                        }else{
-                            val snackbar = Snackbar.make(searchButton, "No Meals Found !!", Snackbar.LENGTH_LONG).setAction("Action", null)
-                            val snackbarView = snackbar.view
-                            snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
-                            val textView =
-                                snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
-                            textView.setTextColor(Color.BLACK)
-                            textView.setTypeface(null, Typeface.BOLD)
-                            textView.textSize = 16f
-                            snackbar.show()
                         }
                     }
                 }
-            }
+//            }else{
+//                if (::linearLayout.isInitialized) {
+//                    runOnUiThread {
+//                        cardScroll.removeAllViews()
+//                        addDbMeals.isEnabled=false
+//                    }
+//                }
+//                val snackbar = Snackbar.make(searchButton, "Not field !!", Snackbar.LENGTH_LONG).setAction("Action", null)
+//                val snackbarView = snackbar.view
+//                snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
+//                val textView =
+//                    snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+//                textView.setTextColor(Color.BLACK)
+//                textView.setTypeface(null, Typeface.BOLD)
+//                textView.textSize = 16f
+//                snackbar.show()
+//            }
         }
 
     }
@@ -170,8 +194,8 @@ class Search_By_Ingredient : AppCompatActivity() {
                     setMargins(10, 20, 10, 30)
                 }
                 contentDescription = context.getString(R.string.app_name)
-//                setImageResource(R.drawable.foodtest)
             }
+
             Glide.with(this)
                 .load(allMeals[index].mealThumb)
                 .into(imageView)
@@ -255,7 +279,18 @@ class Search_By_Ingredient : AppCompatActivity() {
                 snackbar.show()
             }
             innerLinearLayout.setOnClickListener {
-                println("click"+allMeals[index].name)
+                mydialog!!.setContentView(R.layout.activity_extra_meal_details)
+                val extraMealName = mydialog!!.findViewById<TextView>(R.id.extra_meal_name)
+                val extraMealImage = mydialog!!.findViewById<ImageView>(R.id.extra_meal_image)
+                extraMealName.text = allMeals[index].name
+                // Finally, call the function from your activity or fragment using a coroutine:
+                runBlocking{
+                    launch {
+                        val bitmap = allMeals[index].mealThumb?.let { it1 -> downloadImage(it1) }
+                        extraMealImage.setImageBitmap(bitmap)
+                    }
+                }
+                mydialog!!.show()
             }
 
             innerLinearLayout.addView(imageView) // add views to inner LinearLayout
@@ -314,4 +349,16 @@ class Search_By_Ingredient : AppCompatActivity() {
         }
         return true
     }
+    suspend fun downloadImage(url: String): Bitmap? = withContext(Dispatchers.IO) {
+        var bitmap: Bitmap? = null
+        try {
+            val stream = URL(url).openStream()
+            bitmap = BitmapFactory.decodeStream(stream)
+            stream.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        bitmap
+    }
+
 }
