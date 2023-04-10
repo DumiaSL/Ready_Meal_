@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity() {
                     mealDao.insert(mealBeefBanhMi)
                     mealDao.insert(mealLeblebiSoup)
 
-
                     val meals: List<Meals> = mealDao.getAll()
                     for (meal_ in meals) {
                         println(meal_)

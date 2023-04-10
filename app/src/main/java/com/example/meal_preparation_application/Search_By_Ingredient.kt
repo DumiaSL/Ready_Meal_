@@ -2,23 +2,27 @@ package com.example.meal_preparation_application
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.text.LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.room.Room
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
@@ -34,7 +38,6 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
-import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
@@ -159,6 +162,7 @@ class Search_By_Ingredient : AppCompatActivity() {
 
     private fun createMealCards() {
         for (index in 0 until allMeals.size) {
+            var isSelect = false
             linearLayout = LinearLayout(this) // create a new LinearLayout
             linearLayout.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -199,7 +203,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                 }
                 contentDescription = context.getString(R.string.app_name)
             }
-            
+
             var bitmapDrawable: BitmapDrawable? =null
 
             Glide.with(this)
@@ -283,6 +287,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                         mealDao.insert(allMeals[index]);
                     }
                 }
+                isSelect = true
                 button.isEnabled = false
                 button.setText("Already Added to DataBase")
                 button.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
@@ -299,10 +304,176 @@ class Search_By_Ingredient : AppCompatActivity() {
             }
             innerLinearLayout.setOnClickListener {
                 mydialog!!.setContentView(R.layout.activity_extra_meal_details)
+                val extraMealSaveButton = mydialog!!.findViewById<TextView>(R.id.Extrabutton)
                 val extraMealName = mydialog!!.findViewById<TextView>(R.id.extra_meal_name)
                 val extraMealImage = mydialog!!.findViewById<ImageView>(R.id.extra_meal_image)
+                val extraMealCategery = mydialog!!.findViewById<TextView>(R.id.extra_categgory_text)
+                val extraMealArea= mydialog!!.findViewById<TextView>(R.id.extra_area_text)
+                val extraMealdrink= mydialog!!.findViewById<TextView>(R.id.extra_drink_text)
+                val extraMealTags= mydialog!!.findViewById<TextView>(R.id.extra_tag_text)
+                val extraMealInstuctions= mydialog!!.findViewById<TextView>(R.id.extra_ins_text)
+                val extraMealSource = mydialog!!.findViewById<TextView>(R.id.extra_source)
+                val extraMealImgScouce = mydialog!!.findViewById<TextView>(R.id.extra_imagesource)
+                val extraMealYoutube = mydialog!!.findViewById<TextView>(R.id.extra_youtube)
+                val extraMealCreative = mydialog!!.findViewById<TextView>(R.id.extra_creative)
+                val extraMealDate = mydialog!!.findViewById<TextView>(R.id.extra_date)
+
+                val extraMealInglayout = mydialog!!.findViewById<LinearLayout>(R.id.In_layout)
+                val extraMealMelayout = mydialog!!.findViewById<LinearLayout>(R.id.meLayout)
+
+
+
+                if (allMeals[index].drinkAlternate!=null){
+                    extraMealdrink.text = "DrinkAlternate : " + allMeals[index].drinkAlternate
+                }else{
+                    extraMealdrink.isVisible = false
+                }
+
+                if (allMeals[index].source!=null){
+                    extraMealSource.text = "Source : "+allMeals[index].source
+                    extraMealSource.setOnClickListener {
+                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(allMeals[index].source))
+                        startActivity(browserIntent)
+                    }
+                }else{
+                    extraMealSource.isVisible = false
+                }
+
+                if (allMeals[index].youtube!=null){
+                    extraMealYoutube.text = "Youtube : "+  allMeals[index].youtube
+                    extraMealYoutube.setOnClickListener {
+                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(allMeals[index].youtube))
+                        startActivity(browserIntent)
+                    }
+                }else{
+                    extraMealYoutube.isVisible = false
+                }
+
+                if (allMeals[index].imageSource!=null){
+                    extraMealImgScouce.text = "Image Source : "+ allMeals[index].imageSource
+                    extraMealImgScouce.setOnClickListener {
+                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(allMeals[index].imageSource))
+                        startActivity(browserIntent)
+                    }
+                }else{
+                    extraMealImgScouce.isVisible = false
+                }
+
+                if (allMeals[index].creativeCommonsConfirmed!=null){
+                    extraMealCreative.text = "Creative Commons Confirmed : " + allMeals[index].creativeCommonsConfirmed
+                }else{
+                    extraMealCreative.isVisible = false
+                }
+
+                if (allMeals[index].dateModified!=null){
+                    extraMealDate.text = "Date Modified : " + allMeals[index].dateModified
+                }else{
+                    extraMealDate.isVisible = false
+                }
+
+                if (allMeals[index].tags!=null){
+                    extraMealTags.text = allMeals[index].tags
+                }else{
+                    extraMealTags.text = "- -"
+                }
+
+                if (allMeals[index].instructions != null){
+                    extraMealInstuctions.text = allMeals[index].instructions
+                    extraMealInstuctions.justificationMode = JUSTIFICATION_MODE_INTER_WORD
+                }else{
+                    extraMealdrink.text = "- -"
+                }
+
+                if (isSelect){
+                    extraMealSaveButton.isEnabled = false
+                    extraMealSaveButton.setText("Already Added to DataBase")
+                    extraMealSaveButton.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
+                    extraMealSaveButton.setTextColor(Color.WHITE)
+                }
+
                 extraMealName.text = allMeals[index].name
                 extraMealImage.setImageDrawable(bitmapDrawable)
+                extraMealCategery.text = "Category : "+ allMeals[index].category
+                extraMealArea.text = "Area : "+ allMeals[index].area
+
+                extraMealSaveButton.setOnClickListener {
+                    runBlocking {
+                        launch {
+                            mealDao.insert(allMeals[index]);
+                        }
+                    }
+                    button.isEnabled = false
+                    button.setText("Already Added to DataBase")
+                    button.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
+                    button.setTextColor(Color.WHITE)
+                    extraMealSaveButton.isEnabled = false
+                    extraMealSaveButton.setText("Already Added to DataBase")
+                    extraMealSaveButton.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
+                    extraMealSaveButton.setTextColor(Color.WHITE)
+                    val snackbar = Snackbar.make(extraMealSaveButton, "Successfully added Meal"+allMeals[index].name, Snackbar.LENGTH_LONG).setAction("Action", null)
+                    val snackbarView = snackbar.view
+                    snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
+                    val textView =
+                        snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+                    textView.setTextColor(Color.BLACK)
+                    textView.setTypeface(null, Typeface.BOLD)
+                    textView.textSize = 16f
+                    snackbar.show()
+                }
+                val mealIngListWithoutNulls: List<String>? = allMeals[index].ingredients?.toList()
+                val mealMeListWithoutNulls: List<String>? = allMeals[index].measure?.toList()
+
+
+                val filteredList_ing = mealIngListWithoutNulls?.filter {
+                    it.isBlank()
+                }
+                val filteredList_me = mealMeListWithoutNulls?.filter {
+                    it.isBlank()
+                }
+
+                if (mealIngListWithoutNulls != null) {
+                    if (filteredList_ing != null) {
+                        println(filteredList_ing.size)
+                    }
+                }
+                if (mealMeListWithoutNulls != null) {
+                    if (filteredList_me != null) {
+                        println(filteredList_me.size)
+                    }
+                }
+
+                if (filteredList_ing != null) {
+                    for (index in 0 until filteredList_ing.size) {
+                        val temp_ing = TextView(this)
+                        temp_ing.id = View.generateViewId()
+                        temp_ing.layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        temp_ing.text = mealIngListWithoutNulls[index]
+                        temp_ing.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+                        temp_ing.setTextColor(ContextCompat.getColor(this, R.color.black))
+                        temp_ing.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+                        temp_ing.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
+
+                        val temp_me = TextView(this)
+                        temp_me.id = View.generateViewId()
+                        temp_me.layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        temp_me.text = mealMeListWithoutNulls?.get(index)
+                        temp_me.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                        temp_me.setTextColor(ContextCompat.getColor(this, R.color.black))
+                        temp_me.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+                        temp_me.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
+                        // add the textView to a parent layout
+                        extraMealMelayout.addView(temp_me)
+                        extraMealInglayout.addView(temp_ing)
+                    }
+                }
+
+
                 mydialog!!.show()
             }
 
