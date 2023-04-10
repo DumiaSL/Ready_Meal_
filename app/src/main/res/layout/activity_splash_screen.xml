@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E5E5E5"
+    android:background="@drawable/splash"
     tools:context=".Splash_screen">
 
     <TextView
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="183dp"
         android:fontFamily="@font/poppins_bold"
-        android:text="READY MEAL"
+        android:text="@string/ready_meal"
         android:textColor="#050505"
         android:textSize="44sp"
         android:textStyle="bold"
@@ -29,7 +29,7 @@
         android:layout_marginTop="388dp"
         android:fontFamily="@font/poppins_medium"
         android:text="@string/no_waiting_for_food"
-        android:textColor="#787373"
+        android:textColor="#000000"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,13 +42,14 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_marginTop="35dp"
-        android:elevation="6dp"
+        android:elevation="7dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appName"
         app:lottie_autoPlay="true"
-        app:lottie_loop="false"
+        app:lottie_loop="true"
+        app:lottie_repeatMode="restart"
         app:lottie_progress="@integer/material_motion_duration_long_1"
         app:lottie_rawRes="@raw/burger_making_animation" />
 

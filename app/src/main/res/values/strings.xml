@@ -7,4 +7,5 @@
     <string name="search_for_meals">Search for Meals</string>
     <string name="food_search_here">Search Ingredient Here</string>
     <string name="searchButton"> Retrieve Meals</string>
+    <string name="ready_meal">READY MEAL</string>
 </resources>

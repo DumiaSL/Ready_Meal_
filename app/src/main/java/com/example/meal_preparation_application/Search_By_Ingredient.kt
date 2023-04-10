@@ -1,5 +1,6 @@
 package com.example.meal_preparation_application
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
@@ -8,6 +9,7 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -15,8 +17,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.res.ResourcesCompat
+import androidx.room.Room
 import com.bumptech.glide.Glide
+import com.example.meal_preparation_application.classes.AppDatabase
+import com.example.meal_preparation_application.classes.MealDao
 import com.example.meal_preparation_application.classes.Meals
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -31,23 +37,58 @@ import java.net.URL
 class Search_By_Ingredient : AppCompatActivity() {
     var allMeals  = arrayListOf<Meals>();
     lateinit var cardScroll: LinearLayout
+
+    lateinit var linearLayout : LinearLayout
+    lateinit var mealDao : MealDao
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_by_ingredient)
+
+        val db = Room.databaseBuilder(this, AppDatabase::class.java,
+            "mealdatabase").build()
+        mealDao = db.mealDao()
 
 
         val searchButton = findViewById<Button>(R.id.search_button)
         val searchTextField = findViewById<EditText>(R.id.search_bar)
         cardScroll = findViewById<LinearLayout>(R.id.scroll_layout)
+        val addDbMeals = findViewById<Button>(R.id.saveAllMeal_button)
+
+        //
+        addDbMeals.isEnabled=false
+
+        addDbMeals.setOnClickListener {
+            for (index in 0 until allMeals.size) {
+                runBlocking {
+                    launch {
+                        mealDao.insert(allMeals[index]);
+                    }
+                }
+            }
+            val snackbar = Snackbar.make(addDbMeals, "Successfully added all Meals to DB", Snackbar.LENGTH_LONG).setAction("Action", null)
+            val snackbarView = snackbar.view
+            snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
+            val textView =
+                snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+            textView.setTextColor(Color.BLACK)
+            textView.setTypeface(null, Typeface.BOLD)
+            textView.textSize = 16f
+            snackbar.show()
+        }
 
         searchButton.setOnClickListener {
             //reset meal list
             allMeals  = arrayListOf<Meals>();
 
+            //keyboard hide
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(searchTextField.windowToken, 0)
+
+
             // collecting all the JSON string
             var stb = StringBuilder()
             val url_string = "https://www.themealdb.com/api/json/v1/1/search.php?s="+searchTextField.text.toString()
-//            val url_string = "https://www.themealdb.com/api/json/v1/1/search.php?s=Arrabiata"
             val url = URL(url_string)
             val con: HttpURLConnection = url.openConnection() as HttpURLConnection
             runBlocking {
@@ -57,11 +98,29 @@ class Search_By_Ingredient : AppCompatActivity() {
                         val bf = BufferedReader(InputStreamReader(con.inputStream))
                         val line: String? = bf.readLine()
                          stb.append(line)
+                        if (::linearLayout.isInitialized) {
+                            println("reached")
+                            runOnUiThread {
+                                cardScroll.removeAllViews()
+                                addDbMeals.isEnabled=false
+                            }
+                        }
                         if (parseJSON(stb)){
                             //refresh screen
                             runOnUiThread {
+                                addDbMeals.isEnabled=true
                                 createMealCards()
                             }
+                        }else{
+                            val snackbar = Snackbar.make(searchButton, "No Meals Found !!", Snackbar.LENGTH_LONG).setAction("Action", null)
+                            val snackbarView = snackbar.view
+                            snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
+                            val textView =
+                                snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+                            textView.setTextColor(Color.BLACK)
+                            textView.setTypeface(null, Typeface.BOLD)
+                            textView.textSize = 16f
+                            snackbar.show()
                         }
                     }
                 }
@@ -72,7 +131,7 @@ class Search_By_Ingredient : AppCompatActivity() {
 
     private fun createMealCards() {
         for (index in 0 until allMeals.size) {
-            val linearLayout = LinearLayout(this) // create a new LinearLayout
+            linearLayout = LinearLayout(this) // create a new LinearLayout
             linearLayout.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -171,15 +230,32 @@ class Search_By_Ingredient : AppCompatActivity() {
             )
             button.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFD200"))
             button.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
-            button.text = "Save meals to Database"
+            button.text = "Save meal to Database"
             button.setTextColor(Color.parseColor("#0E0E0E"))
             button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
             button.setTypeface(button.typeface, Typeface.BOLD)
             button.setOnClickListener {
-                println("clickme button "+allMeals[index].name)
+                runBlocking {
+                    launch {
+                        mealDao.insert(allMeals[index]);
+                    }
+                }
+                button.isEnabled = false
+                button.setText("Already Added to DataBase")
+                button.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
+                button.setTextColor(Color.WHITE)
+                val snackbar = Snackbar.make(button, "Successfully added Meal"+allMeals[index].name, Snackbar.LENGTH_LONG).setAction("Action", null)
+                val snackbarView = snackbar.view
+                snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
+                val textView =
+                    snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+                textView.setTextColor(Color.BLACK)
+                textView.setTypeface(null, Typeface.BOLD)
+                textView.textSize = 16f
+                snackbar.show()
             }
             innerLinearLayout.setOnClickListener {
-                println("clickme"+allMeals[index].name)
+                println("click"+allMeals[index].name)
             }
 
             innerLinearLayout.addView(imageView) // add views to inner LinearLayout
@@ -209,13 +285,12 @@ class Search_By_Ingredient : AppCompatActivity() {
         // this contains the full JSON returned by the Web Service
         val json = JSONObject(stb.toString())
         // Information about all the Meals extracted by this function
-//        if (json.isNull())
         if (json.isNull("meals")){
             return false
         }else {
             val jsonArray: JSONArray = json.getJSONArray("meals")
             // extract all the books from the JSON array
-            for (i in 0..jsonArray.length() - 1) {
+            for (i in 0 until jsonArray.length()) {
                 val book: JSONObject = jsonArray[i] as JSONObject // this is a json object
 
                 val meal = Meals(
