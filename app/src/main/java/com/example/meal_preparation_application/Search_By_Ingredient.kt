@@ -55,6 +55,10 @@ class Search_By_Ingredient : AppCompatActivity() {
     lateinit var searchTextField:EditText
     lateinit var addDbMeals:Button
 
+    lateinit var searchText: String
+    var isCardPopUp=false
+    var issavedAlldatabase = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_by_ingredient)
@@ -71,6 +75,11 @@ class Search_By_Ingredient : AppCompatActivity() {
         searchTextField = findViewById<EditText>(R.id.search_bar)
         cardScroll = findViewById<LinearLayout>(R.id.scroll_layout)
         addDbMeals = findViewById<Button>(R.id.saveAllMeal_button)
+
+        if (savedInstanceState != null) {
+
+            searchText = savedInstanceState.getString("searchText").toString()
+        }
 
         //hide add all meal button
         addDbMeals.isEnabled=false
@@ -91,6 +100,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                 }
             }
             addDbMeals.isEnabled=false
+            issavedAlldatabase = true
             val snackbar = Snackbar.make(addDbMeals, "Successfully added all Meals to DB", Snackbar.LENGTH_LONG).setAction("Action", null)
             val snackbarView = snackbar.view
             snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
@@ -184,6 +194,7 @@ class Search_By_Ingredient : AppCompatActivity() {
         }else{
             if (::linearLayout.isInitialized) {
                 runOnUiThread {
+                    isCardPopUp = false
                     cardScroll.removeAllViews()
                     addDbMeals.isEnabled=false
                 }
@@ -203,6 +214,7 @@ class Search_By_Ingredient : AppCompatActivity() {
 
     //Creating meal card on ui
     private fun createMealCards() {
+        isCardPopUp=true
         Controllist.clear()
         for (index in 0 until allMeals.size) {
             var isSelect = false
@@ -558,5 +570,44 @@ class Search_By_Ingredient : AppCompatActivity() {
             }
         }
         return true
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("searchText", searchTextField.text.toString())
+        outState.putBoolean("isCardPopUp", isCardPopUp)
+        println(issavedAlldatabase)
+        outState.putBoolean("issavedAlldatabase", issavedAlldatabase)
+
+
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        searchText = savedInstanceState.getString("searchText").toString()
+        isCardPopUp = savedInstanceState.getBoolean("isCardPopUp")
+        issavedAlldatabase = savedInstanceState.getBoolean("issavedAlldatabase")
+        println(issavedAlldatabase)
+
+        whenRotateSet()
+    }
+
+    private fun whenRotateSet() {
+        searchTextField.setText(searchText)
+
+        if (isCardPopUp) search_fun()
+
+        if (issavedAlldatabase){
+            addDbMeals.isEnabled=false
+        }
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+        if (mydialog != null && mydialog!!.isShowing()) {
+            mydialog!!.dismiss()
+        }
+
     }
 }
