@@ -7,5 +7,4 @@ import androidx.room.*
 @TypeConverters(StringListTypeConverter:: class)
 abstract class AppDatabase : RoomDatabase(){
     abstract fun mealDao(): MealDao
-
 }

@@ -33,8 +33,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ECEBE8"
         android:backgroundTint="#FFD200"
+        android:background="@drawable/liner_layout"
         android:elevation="20dp"
         android:orientation="vertical"
         android:paddingHorizontal="20dp">
@@ -46,13 +46,15 @@
             android:layout_marginTop="20dp"
             android:layout_marginBottom="5dp"
             android:autofillHints=""
-            android:background="#E19D9D"
+            android:background="@drawable/textfield_style"
             android:backgroundTint="#F8F0A6"
-            android:elevation="20dp"
+            android:drawableEnd="@android:drawable/ic_menu_search"
+            android:elevation="25dp"
             android:fontFamily="@font/poppins_medium"
             android:hint="Seaech Here."
             android:inputType="textPersonName"
             android:textAlignment="center" />
+        
 
         <Button
             android:id="@+id/search_button"
@@ -85,7 +87,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="3dp">
 
         <LinearLayout
@@ -104,5 +106,22 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieAnimationView"
+        android:layout_width="310dp"
+        android:layout_height="310dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="75dp"
+        android:elevation="7dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appName"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_progress="@integer/material_motion_duration_long_1"
+        app:lottie_rawRes="@raw/thinking"
+        app:lottie_repeatMode="restart" />
 
 </LinearLayout>

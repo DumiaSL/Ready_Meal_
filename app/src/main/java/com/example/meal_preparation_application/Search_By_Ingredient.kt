@@ -15,7 +15,6 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -50,8 +49,8 @@ class Search_By_Ingredient : AppCompatActivity() {
     lateinit var linearLayout : LinearLayout
     lateinit var mealDao : MealDao
 
-
     var mydialog: Dialog? = null
+    lateinit var Controllist:ArrayList<Button>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +61,7 @@ class Search_By_Ingredient : AppCompatActivity() {
         mealDao = db.mealDao()
 
         mydialog=Dialog(this)
-
+        Controllist = ArrayList()
 
         val searchButton = findViewById<Button>(R.id.search_button)
         val searchTextField = findViewById<EditText>(R.id.search_bar)
@@ -73,10 +72,15 @@ class Search_By_Ingredient : AppCompatActivity() {
         addDbMeals.isEnabled=false
 
         addDbMeals.setOnClickListener {
+            println(Controllist)
             for (index in 0 until allMeals.size) {
                 runBlocking {
                     launch {
                         mealDao.insert(allMeals[index]);
+                        Controllist[index].isEnabled = false
+                        Controllist[index].setText("Already Added to DataBase")
+                        Controllist[index].backgroundTintList = ColorStateList.valueOf(Color.BLACK)
+                        Controllist[index].setTextColor(Color.WHITE)
                     }
                 }
             }
@@ -93,14 +97,14 @@ class Search_By_Ingredient : AppCompatActivity() {
         }
 
         searchButton.setOnClickListener {
-//            if (searchTextField.text.isNotEmpty()){
+            //keyboard hide
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(searchTextField.windowToken, 0)
+
+            if (searchTextField.text.isNotEmpty()){
                 //reset meal list
                 allMeals  = arrayListOf<Meals>();
                 addDbMeals.isEnabled=true
-
-                //keyboard hide
-                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(searchTextField.windowToken, 0)
 
                 // collecting all the JSON string
                 val stb = StringBuilder()
@@ -114,6 +118,8 @@ class Search_By_Ingredient : AppCompatActivity() {
                             val bf = BufferedReader(InputStreamReader(con.inputStream))
                             val line: String? = bf.readLine()
                             stb.append(line)
+
+
                             if (::linearLayout.isInitialized) {
                                 runOnUiThread {
                                     cardScroll.removeAllViews()
@@ -139,28 +145,28 @@ class Search_By_Ingredient : AppCompatActivity() {
                         }
                     }
                 }
-//            }else{
-//                if (::linearLayout.isInitialized) {
-//                    runOnUiThread {
-//                        cardScroll.removeAllViews()
-//                        addDbMeals.isEnabled=false
-//                    }
-//                }
-//                val snackbar = Snackbar.make(searchButton, "Not field !!", Snackbar.LENGTH_LONG).setAction("Action", null)
-//                val snackbarView = snackbar.view
-//                snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
-//                val textView =
-//                    snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
-//                textView.setTextColor(Color.BLACK)
-//                textView.setTypeface(null, Typeface.BOLD)
-//                textView.textSize = 16f
-//                snackbar.show()
-//            }
+            }else{
+                if (::linearLayout.isInitialized) {
+                    runOnUiThread {
+                        cardScroll.removeAllViews()
+                        addDbMeals.isEnabled=false
+                    }
+                }
+                val snackbar = Snackbar.make(searchButton, "Not field !!", Snackbar.LENGTH_LONG).setAction("Action", null)
+                val snackbarView = snackbar.view
+                snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
+                val textView =
+                    snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+                textView.setTextColor(Color.BLACK)
+                textView.setTypeface(null, Typeface.BOLD)
+                textView.textSize = 16f
+                snackbar.show()
+            }
         }
-
     }
 
     private fun createMealCards() {
+        Controllist.clear()
         for (index in 0 until allMeals.size) {
             var isSelect = false
             linearLayout = LinearLayout(this) // create a new LinearLayout
@@ -185,7 +191,6 @@ class Search_By_Ingredient : AppCompatActivity() {
             cardView.preventCornerOverlap = true
             cardView.radius = 40f
 
-
             val innerLinearLayout = LinearLayout(this) // create an inner LinearLayout
             innerLinearLayout.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -199,13 +204,13 @@ class Search_By_Ingredient : AppCompatActivity() {
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
                     gravity = Gravity.CENTER
-                    setMargins(10, 20, 10, 30)
+                    setMargins(10, 20, 10, 0)
+
                 }
                 contentDescription = context.getString(R.string.app_name)
             }
 
             var bitmapDrawable: BitmapDrawable? =null
-
             Glide.with(this)
                 .asBitmap()
                 .load(allMeals[index].mealThumb)
@@ -223,50 +228,34 @@ class Search_By_Ingredient : AppCompatActivity() {
                     }
                 })
 
-            val mealName = TextView(this).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                setPadding(260, 20, 0, 20)
-                typeface = ResourcesCompat.getFont(context, R.font.poppins_bold)
-                text = allMeals[index].name
-                setTextColor(Color.parseColor("#0E0E0E"))
-                textSize = 26f // 26sp in pixels
-                setTypeface(typeface, Typeface.BOLD)
-            }
+            val mealName = TextView(this)
+            mealName.text = allMeals[index].name
+            mealName.gravity = Gravity.CENTER_HORIZONTAL
+            mealName.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
+            mealName.setTextColor(ContextCompat.getColor(this, R.color.black))
+            mealName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35f)
 
-            val mealCategory = TextView(this).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                setPadding(260, 20, 0, 20)
-                typeface = ResourcesCompat.getFont(context, R.font.poppins_bold)
-                text = "Category : " + allMeals[index].category
-                setTextColor(Color.parseColor("#0E0E0E"))
-                textSize = 16f // 26sp in pixels
-                setTypeface(typeface, Typeface.BOLD)
-            }
+            val mealCategory = TextView(this)
+            mealCategory.text = "Category : " + allMeals[index].category
+            mealCategory.gravity = Gravity.CENTER_HORIZONTAL
+            mealCategory.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
+            mealCategory.setTextColor(ContextCompat.getColor(this, R.color.black))
+            mealCategory.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
 
-            val mealArea = TextView(this).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                setPadding(260, 20, 0, 40)
-                typeface = ResourcesCompat.getFont(context, R.font.poppins_bold)
-                text = "Area         : " + allMeals[index].area
-                setTextColor(Color.parseColor("#0E0E0E"))
-                textSize = 16f // 26sp in pixels
-                setTypeface(typeface, Typeface.BOLD)
-            }
+            val mealArea = TextView(this)
+            mealArea.text = "Area         : " + allMeals[index].area
+            mealArea.gravity = Gravity.CENTER_HORIZONTAL
+            mealArea.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
+            mealArea.setTextColor(ContextCompat.getColor(this, R.color.black))
+            mealArea.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
 
             val inner1LinearLayout = LinearLayout(this) // create an inner LinearLayout
             innerLinearLayout.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
-            ) // set layout params
+            ) .apply {
+                setMargins(0, 10,0, 0)
+            }// set layout params
             innerLinearLayout.orientation = LinearLayout.VERTICAL // set orientation
 
             val button = Button(this)
@@ -302,6 +291,9 @@ class Search_By_Ingredient : AppCompatActivity() {
                 textView.textSize = 16f
                 snackbar.show()
             }
+            Controllist.add(button)
+
+            //
             innerLinearLayout.setOnClickListener {
                 mydialog!!.setContentView(R.layout.activity_extra_meal_details)
                 val extraMealSaveButton = mydialog!!.findViewById<TextView>(R.id.Extrabutton)
@@ -320,7 +312,6 @@ class Search_By_Ingredient : AppCompatActivity() {
 
                 val extraMealInglayout = mydialog!!.findViewById<LinearLayout>(R.id.In_layout)
                 val extraMealMelayout = mydialog!!.findViewById<LinearLayout>(R.id.meLayout)
-
 
 
                 if (allMeals[index].drinkAlternate!=null){
@@ -420,60 +411,52 @@ class Search_By_Ingredient : AppCompatActivity() {
                     textView.textSize = 16f
                     snackbar.show()
                 }
+
                 val mealIngListWithoutNulls: List<String>? = allMeals[index].ingredients?.toList()
                 val mealMeListWithoutNulls: List<String>? = allMeals[index].measure?.toList()
 
-
-                val filteredList_ing = mealIngListWithoutNulls?.filter {
-                    it.isBlank()
-                }
-                val filteredList_me = mealMeListWithoutNulls?.filter {
-                    it.isBlank()
-                }
+                val filteredList_ing = ArrayList<String>()
+                val filteredList_me = ArrayList<String>()
 
                 if (mealIngListWithoutNulls != null) {
-                    if (filteredList_ing != null) {
-                        println(filteredList_ing.size)
-                    }
-                }
-                if (mealMeListWithoutNulls != null) {
-                    if (filteredList_me != null) {
-                        println(filteredList_me.size)
-                    }
-                }
-
-                if (filteredList_ing != null) {
-                    for (index in 0 until filteredList_ing.size) {
-                        val temp_ing = TextView(this)
-                        temp_ing.id = View.generateViewId()
-                        temp_ing.layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        )
-                        temp_ing.text = mealIngListWithoutNulls[index]
-                        temp_ing.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-                        temp_ing.setTextColor(ContextCompat.getColor(this, R.color.black))
-                        temp_ing.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
-                        temp_ing.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
-
-                        val temp_me = TextView(this)
-                        temp_me.id = View.generateViewId()
-                        temp_me.layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        )
-                        temp_me.text = mealMeListWithoutNulls?.get(index)
-                        temp_me.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                        temp_me.setTextColor(ContextCompat.getColor(this, R.color.black))
-                        temp_me.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
-                        temp_me.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
-                        // add the textView to a parent layout
-                        extraMealMelayout.addView(temp_me)
-                        extraMealInglayout.addView(temp_ing)
+                    for (index in 0 until mealIngListWithoutNulls.size){
+                        if (mealIngListWithoutNulls[index].isNotEmpty() && mealIngListWithoutNulls[index]!= "  " &&  mealIngListWithoutNulls[index]!= "   "){
+                            filteredList_ing.add(mealIngListWithoutNulls.get(index))
+                        }
+                        if (mealMeListWithoutNulls?.get(index)?.isNotEmpty()!! &&  mealIngListWithoutNulls[index]!= "  " &&  mealIngListWithoutNulls[index]!= "   "){
+                            filteredList_me.add(mealMeListWithoutNulls.get(index))
+                        }
                     }
                 }
 
+                for (index in 0 until filteredList_ing.size) {
+                    val temp_ing = TextView(this)
+                    temp_ing.id = View.generateViewId()
+                    temp_ing.layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    temp_ing.text = filteredList_ing[index]
+                    temp_ing.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+                    temp_ing.setTextColor(ContextCompat.getColor(this, R.color.black))
+                    temp_ing.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+                    temp_ing.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
 
+                    val temp_me = TextView(this)
+                    temp_me.id = View.generateViewId()
+                    temp_me.layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    temp_me.text = filteredList_me[index]
+                    temp_me.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                    temp_me.setTextColor(ContextCompat.getColor(this, R.color.black))
+                    temp_me.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+                    temp_me.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
+                    // add the textView to a parent layout
+                    extraMealMelayout.addView(temp_me)
+                    extraMealInglayout.addView(temp_ing)
+                }
                 mydialog!!.show()
             }
 
@@ -488,7 +471,6 @@ class Search_By_Ingredient : AppCompatActivity() {
             linearLayout.addView(cardView) // add cardView to outer LinearLayout
             cardScroll.addView(linearLayout) // add outer LinearLayout to your layout
         }
-
     }
 
     private fun getList(book: JSONObject, typeName: String): ArrayList<String> {
