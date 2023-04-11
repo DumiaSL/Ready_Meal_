@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top"
+
+    android:orientation="vertical"
+    app:circularflow_defaultRadius="@dimen/cardview_default_radius"
+    tools:context=".Search_By_Ingredient">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/poppins_bold"
+            android:text="@string/food_search_here"
+            android:textAlignment="center"
+            android:textColor="#131313"
+            android:textSize="31sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="1dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/liner_layout"
+            android:backgroundTint="#FFD200"
+            android:elevation="20dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="10dp">
+
+            <EditText
+                android:id="@+id/search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginBottom="5dp"
+                android:autofillHints=""
+                android:background="@drawable/textfield_style"
+                android:backgroundTint="#F8F0A6"
+                android:drawableEnd="@android:drawable/ic_menu_search"
+                android:elevation="25dp"
+                android:fontFamily="@font/poppins_medium"
+                android:hint="Seaech Here"
+                android:inputType="textPersonName"
+                android:textAlignment="center" />
+
+            <Button
+                android:id="@+id/search_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginBottom="1dp"
+                android:fontFamily="@font/poppins_bold"
+                android:paddingVertical="10dp"
+                android:text="@string/searchButton"
+                android:textStyle="bold"
+                app:cornerRadius="20dp" />
+
+            <Button
+                android:id="@+id/saveAllMeal_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginBottom="15dp"
+                android:fontFamily="@font/poppins_bold"
+                android:paddingVertical="10dp"
+                android:text=" Save All meals to Database"
+                android:textStyle="bold"
+                app:cornerRadius="20dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp">
+
+                <LinearLayout
+                    android:id="@+id/scroll_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </ScrollView>
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottieAnimationView3"
+                android:layout_width="320dp"
+                android:layout_height="260dp"
+                android:layout_marginStart="100dp"
+                android:layout_weight="1"
+                android:elevation="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/appName"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_progress="@integer/material_motion_duration_long_1"
+                app:lottie_rawRes="@raw/thinking"
+                app:lottie_repeatMode="restart" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

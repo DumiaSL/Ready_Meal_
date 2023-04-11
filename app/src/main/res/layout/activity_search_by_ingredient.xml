@@ -51,10 +51,9 @@
             android:drawableEnd="@android:drawable/ic_menu_search"
             android:elevation="25dp"
             android:fontFamily="@font/poppins_medium"
-            android:hint="Seaech Here."
+            android:hint="Seaech Here"
             android:inputType="textPersonName"
             android:textAlignment="center" />
-        
 
         <Button
             android:id="@+id/search_button"
@@ -113,7 +112,7 @@
         android:layout_height="310dp"
         android:layout_marginStart="50dp"
         android:layout_marginTop="75dp"
-        android:elevation="7dp"
+        android:elevation="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"

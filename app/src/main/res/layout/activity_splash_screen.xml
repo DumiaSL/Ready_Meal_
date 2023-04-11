@@ -42,14 +42,13 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_marginTop="35dp"
-        android:elevation="7dp"
+        android:elevation="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appName"
         app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        app:lottie_repeatMode="restart"
+        app:lottie_loop="false"
         app:lottie_progress="@integer/material_motion_duration_long_1"
         app:lottie_rawRes="@raw/burger_making_animation" />
 

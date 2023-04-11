@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -40,22 +41,25 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.UnknownHostException
 
 
 class Search_By_Ingredient : AppCompatActivity() {
     var allMeals  = arrayListOf<Meals>();
     lateinit var cardScroll: LinearLayout
-
     lateinit var linearLayout : LinearLayout
     lateinit var mealDao : MealDao
-
     var mydialog: Dialog? = null
     lateinit var Controllist:ArrayList<Button>
+    lateinit var searchButton:Button
+    lateinit var searchTextField:EditText
+    lateinit var addDbMeals:Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_by_ingredient)
 
+        //connecting with local data base named "mealdatabase"
         val db = Room.databaseBuilder(this, AppDatabase::class.java,
             "mealdatabase").build()
         mealDao = db.mealDao()
@@ -63,14 +67,16 @@ class Search_By_Ingredient : AppCompatActivity() {
         mydialog=Dialog(this)
         Controllist = ArrayList()
 
-        val searchButton = findViewById<Button>(R.id.search_button)
-        val searchTextField = findViewById<EditText>(R.id.search_bar)
+        searchButton = findViewById<Button>(R.id.search_button)
+        searchTextField = findViewById<EditText>(R.id.search_bar)
         cardScroll = findViewById<LinearLayout>(R.id.scroll_layout)
-        val addDbMeals = findViewById<Button>(R.id.saveAllMeal_button)
+        addDbMeals = findViewById<Button>(R.id.saveAllMeal_button)
 
-        //
+        //hide add all meal button
         addDbMeals.isEnabled=false
 
+
+        //when press add all meal button
         addDbMeals.setOnClickListener {
             println(Controllist)
             for (index in 0 until allMeals.size) {
@@ -96,15 +102,31 @@ class Search_By_Ingredient : AppCompatActivity() {
             snackbar.show()
         }
 
-        searchButton.setOnClickListener {
-            //keyboard hide
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(searchTextField.windowToken, 0)
+        //when press search button
+        searchTextField.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                // Perform your action here
+                search_fun()
+                return@OnKeyListener true
+            }
+            false
+        })
 
-            if (searchTextField.text.isNotEmpty()){
-                //reset meal list
-                allMeals  = arrayListOf<Meals>();
-                addDbMeals.isEnabled=true
+        searchButton.setOnClickListener {
+            search_fun()
+        }
+
+    }
+
+    //Search Process
+    private fun search_fun() {
+        //keyboard hide
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(searchTextField.windowToken, 0)
+
+        if (searchTextField.text.isNotEmpty()){
+            try {
+
 
                 // collecting all the JSON string
                 val stb = StringBuilder()
@@ -119,13 +141,15 @@ class Search_By_Ingredient : AppCompatActivity() {
                             val line: String? = bf.readLine()
                             stb.append(line)
 
-
+                            //reset screen
                             if (::linearLayout.isInitialized) {
                                 runOnUiThread {
                                     cardScroll.removeAllViews()
                                     addDbMeals.isEnabled=false
                                 }
                             }
+
+                            //checking is melas have
                             if (parseJSON(stb)){
                                 //refresh screen
                                 runOnUiThread {
@@ -145,26 +169,39 @@ class Search_By_Ingredient : AppCompatActivity() {
                         }
                     }
                 }
-            }else{
-                if (::linearLayout.isInitialized) {
-                    runOnUiThread {
-                        cardScroll.removeAllViews()
-                        addDbMeals.isEnabled=false
-                    }
-                }
-                val snackbar = Snackbar.make(searchButton, "Not field !!", Snackbar.LENGTH_LONG).setAction("Action", null)
+            }
+            catch (error : UnknownHostException){
+                println(error)
+                val snackbar = Snackbar.make(searchButton, "No Internet Connection !!", Snackbar.LENGTH_LONG).setAction("Action", null)
                 val snackbarView = snackbar.view
                 snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
-                val textView =
-                    snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+                val textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
                 textView.setTextColor(Color.BLACK)
                 textView.setTypeface(null, Typeface.BOLD)
                 textView.textSize = 16f
                 snackbar.show()
             }
+        }else{
+            if (::linearLayout.isInitialized) {
+                runOnUiThread {
+                    cardScroll.removeAllViews()
+                    addDbMeals.isEnabled=false
+                }
+            }
+            val snackbar = Snackbar.make(searchButton, "Please Enter Ingredient !!", Snackbar.LENGTH_LONG).setAction("Action", null)
+            val snackbarView = snackbar.view
+            snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
+            val textView =
+                snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+            textView.setTextColor(Color.BLACK)
+            textView.setTypeface(null, Typeface.BOLD)
+            textView.textSize = 16f
+            snackbar.show()
         }
     }
 
+
+    //Creating meal card on ui
     private fun createMealCards() {
         Controllist.clear()
         for (index in 0 until allMeals.size) {
@@ -295,6 +332,8 @@ class Search_By_Ingredient : AppCompatActivity() {
 
             //
             innerLinearLayout.setOnClickListener {
+                if (!button.isEnabled)isSelect=true
+
                 mydialog!!.setContentView(R.layout.activity_extra_meal_details)
                 val extraMealSaveButton = mydialog!!.findViewById<TextView>(R.id.Extrabutton)
                 val extraMealName = mydialog!!.findViewById<TextView>(R.id.extra_meal_name)
@@ -473,16 +512,21 @@ class Search_By_Ingredient : AppCompatActivity() {
         }
     }
 
-    private fun getList(book: JSONObject, typeName: String): ArrayList<String> {
+    //
+    private fun getList(jsonMealList: JSONObject, typeName: String): ArrayList<String> {
         val temp = ArrayList<String>()
         for (i in 1..20) {
-            val type = book[typeName+i.toString()]as? String ?: null
+            val type = jsonMealList[typeName+i.toString()]as? String ?: null
             temp.add(type.toString())
         }
         return temp;
     }
 
+    //
     private fun parseJSON(stb: java.lang.StringBuilder): Boolean {
+        //reset All meal List
+        allMeals  = arrayListOf<Meals>();
+
         // this contains the full JSON returned by the Web Service
         val json = JSONObject(stb.toString())
         // Information about all the Meals extracted by this function
@@ -492,23 +536,23 @@ class Search_By_Ingredient : AppCompatActivity() {
             val jsonArray: JSONArray = json.getJSONArray("meals")
             // extract all the books from the JSON array
             for (i in 0 until jsonArray.length()) {
-                val book: JSONObject = jsonArray[i] as JSONObject // this is a json object
+                val jsonMealList: JSONObject = jsonArray[i] as JSONObject // this is a json object
 
                 val meal = Meals(
-                    name = book["strMeal"] as? String ?: null,
-                    drinkAlternate = book["strDrinkAlternate"] as? String ?: null,
-                    category = book["strCategory"] as? String ?: null,
-                    area = book["strArea"]as? String ?: null,
-                    instructions = book["strInstructions"] as? String ?: null,
-                    mealThumb = book["strMealThumb"] as? String ?: null,
-                    ingredients = getList(book,"strIngredient"),
-                    measure = getList(book,"strMeasure"),
-                    tags = book["strTags"] as? String ?: null,
-                    youtube = book["strYoutube"] as? String ?: null,
-                    source = book["strSource"] as? String ?: null,
-                    imageSource = book["strImageSource"] as? String ?: null,
-                    creativeCommonsConfirmed = book["strCreativeCommonsConfirmed"] as? String ?: null,
-                    dateModified = book["dateModified"] as? String ?: null,
+                    name = jsonMealList["strMeal"] as? String ?: null,
+                    drinkAlternate = jsonMealList["strDrinkAlternate"] as? String ?: null,
+                    category = jsonMealList["strCategory"] as? String ?: null,
+                    area = jsonMealList["strArea"]as? String ?: null,
+                    instructions = jsonMealList["strInstructions"] as? String ?: null,
+                    mealThumb = jsonMealList["strMealThumb"] as? String ?: null,
+                    ingredients = getList(jsonMealList,"strIngredient"),
+                    measure = getList(jsonMealList,"strMeasure"),
+                    tags = jsonMealList["strTags"] as? String ?: null,
+                    youtube = jsonMealList["strYoutube"] as? String ?: null,
+                    source = jsonMealList["strSource"] as? String ?: null,
+                    imageSource = jsonMealList["strImageSource"] as? String ?: null,
+                    creativeCommonsConfirmed = jsonMealList["strCreativeCommonsConfirmed"] as? String ?: null,
+                    dateModified = jsonMealList["dateModified"] as? String ?: null,
                 )
                 allMeals.add(meal)
             }

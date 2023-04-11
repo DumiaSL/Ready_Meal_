@@ -13,10 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Meal_preparation_application"
         tools:targetApi="31">
-        <meta-data
-            android:name="com.google.android.actions"
-            android:resource="@drawable/button_bg" />
-
         <activity
             android:name=".Search_By_Ingredient"
             android:exported="false" />
@@ -25,6 +21,7 @@
             android:exported="false" />
         <activity
             android:name=".Splash_screen"
+
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
