@@ -57,6 +57,7 @@ class Search_By_Ingredient : AppCompatActivity() {
     lateinit var searchText: String
     var isCardPopUp=false
     var issavedAlldatabase = false
+    lateinit var selected_card_list: ArrayList<Int>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,16 +69,19 @@ class Search_By_Ingredient : AppCompatActivity() {
 
         mydialog=Dialog(this)
         Controllist = ArrayList()
+        selected_card_list = ArrayList()
 
         searchButton = findViewById<Button>(R.id.search_button)
         searchTextField = findViewById<EditText>(R.id.search_bar)
         cardScroll = findViewById<LinearLayout>(R.id.scroll_layout)
         addDbMeals = findViewById<Button>(R.id.saveAllMeal_button)
 
+        //
         if (savedInstanceState != null) {
             searchText = savedInstanceState.getString("searchText").toString()
             isCardPopUp = savedInstanceState.getBoolean("isCardPopUp")
             issavedAlldatabase = savedInstanceState.getBoolean("issavedAlldatabase")
+            selected_card_list= savedInstanceState.getIntegerArrayList("selected_card_list") as ArrayList<Int>
         }
 
         //hide add all meal button
@@ -86,11 +90,10 @@ class Search_By_Ingredient : AppCompatActivity() {
 
         //when press add all meal button
         addDbMeals.setOnClickListener {
-            println(Controllist)
             for (index in 0 until allMeals.size) {
                 runBlocking {
                     launch {
-                        mealDao.insert(allMeals[index]);
+                        if (!selected_card_list.contains(index)) mealDao.insert(allMeals[index]);
                         Controllist[index].isEnabled = false
                         Controllist[index].setText("Already Added to DataBase")
                         Controllist[index].backgroundTintList = ColorStateList.valueOf(Color.BLACK)
@@ -100,6 +103,8 @@ class Search_By_Ingredient : AppCompatActivity() {
             }
             addDbMeals.isEnabled=false
             issavedAlldatabase = true
+
+            //
             val snackbar = Snackbar.make(addDbMeals, "Successfully added all Meals to DB", Snackbar.LENGTH_LONG).setAction("Action", null)
             val snackbarView = snackbar.view
             snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
@@ -114,6 +119,8 @@ class Search_By_Ingredient : AppCompatActivity() {
         searchTextField.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 // Perform your action here
+                issavedAlldatabase = false
+                selected_card_list = ArrayList()
                 search_fun()
                 return@OnKeyListener true
             }
@@ -122,6 +129,8 @@ class Search_By_Ingredient : AppCompatActivity() {
 
         //when press the search button
         searchButton.setOnClickListener {
+            issavedAlldatabase= false
+            selected_card_list = ArrayList()
             search_fun()
         }
 
@@ -136,7 +145,6 @@ class Search_By_Ingredient : AppCompatActivity() {
 
         if (searchTextField.text.isNotEmpty()){
             try {
-
                 // collecting all the JSON string
                 val stb = StringBuilder()
                 val url_string = "https://www.themealdb.com/api/json/v1/1/search.php?s="+searchTextField.text.toString()
@@ -181,7 +189,6 @@ class Search_By_Ingredient : AppCompatActivity() {
                 }
             }
             catch (error : UnknownHostException){
-                println(error)
                 val snackbar = Snackbar.make(searchButton, "No Internet Connection !!", Snackbar.LENGTH_LONG).setAction("Action", null)
                 val snackbarView = snackbar.view
                 snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
@@ -314,23 +321,32 @@ class Search_By_Ingredient : AppCompatActivity() {
             )
             button.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFD200"))
             button.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
-            button.isEnabled = addDbMeals.isEnabled
             button.text = "Save meal to Database"
             button.setTextColor(Color.parseColor("#0E0E0E"))
             button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
             button.setTypeface(button.typeface, Typeface.BOLD)
+            if (!addDbMeals.isEnabled || selected_card_list?.contains(index)!! ){
+                println("reached")
+                button.isEnabled = false
+                button.setText("Already Added to DataBase")
+                button.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
+                button.setTextColor(Color.WHITE)
+            }
             button.setOnClickListener {
+                selected_card_list?.add(index)
                 runBlocking {
                     launch {
                         mealDao.insert(allMeals[index]);
                     }
                 }
-//                isSelect = true
+                //
                 button.isEnabled = false
                 button.setText("Already Added to DataBase")
                 button.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
                 button.setTextColor(Color.WHITE)
-                val snackbar = Snackbar.make(button, "Successfully added Meal"+allMeals[index].name, Snackbar.LENGTH_LONG).setAction("Action", null)
+
+                //Toast message
+                val snackbar = Snackbar.make(button, "Successfully added Meal "+allMeals[index].name, Snackbar.LENGTH_LONG).setAction("Action", null)
                 val snackbarView = snackbar.view
                 snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
                 val textView =
@@ -344,7 +360,6 @@ class Search_By_Ingredient : AppCompatActivity() {
 
             //
             innerLinearLayout.setOnClickListener {
-//                if (!button.isEnabled)isSelect=true
 
                 mydialog!!.setContentView(R.layout.activity_extra_meal_details)
                 val extraMealSaveButton = mydialog!!.findViewById<TextView>(R.id.Extrabutton)
@@ -364,6 +379,10 @@ class Search_By_Ingredient : AppCompatActivity() {
                 val extraMealInglayout = mydialog!!.findViewById<LinearLayout>(R.id.In_layout)
                 val extraMealMelayout = mydialog!!.findViewById<LinearLayout>(R.id.meLayout)
 
+                extraMealName.text = allMeals[index].name
+                extraMealImage.setImageDrawable(bitmapDrawable)
+                extraMealCategery.text = "Category : "+ allMeals[index].category
+                extraMealArea.text = "Area : "+ allMeals[index].area
 
                 if (allMeals[index].drinkAlternate!=null){
                     extraMealdrink.text = "DrinkAlternate : " + allMeals[index].drinkAlternate
@@ -426,33 +445,36 @@ class Search_By_Ingredient : AppCompatActivity() {
                     extraMealdrink.text = "- -"
                 }
 
+                //
                 if (!button.isEnabled){
-                    extraMealSaveButton.isEnabled = false
+                    extraMealSaveButton.isEnabled= false
                     extraMealSaveButton.setText("Already Added to DataBase")
                     extraMealSaveButton.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
                     extraMealSaveButton.setTextColor(Color.WHITE)
                 }
 
-                extraMealName.text = allMeals[index].name
-                extraMealImage.setImageDrawable(bitmapDrawable)
-                extraMealCategery.text = "Category : "+ allMeals[index].category
-                extraMealArea.text = "Area : "+ allMeals[index].area
-
                 extraMealSaveButton.setOnClickListener {
+                    selected_card_list?.add(index)
+                    //
                     runBlocking {
                         launch {
                             mealDao.insert(allMeals[index]);
                         }
                     }
+
+                    //
                     button.isEnabled = false
                     button.setText("Already Added to DataBase")
                     button.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
                     button.setTextColor(Color.WHITE)
+                    //
                     extraMealSaveButton.isEnabled = false
                     extraMealSaveButton.setText("Already Added to DataBase")
                     extraMealSaveButton.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
                     extraMealSaveButton.setTextColor(Color.WHITE)
-                    val snackbar = Snackbar.make(extraMealSaveButton, "Successfully added Meal"+allMeals[index].name, Snackbar.LENGTH_LONG).setAction("Action", null)
+
+                    //Toast message
+                    val snackbar = Snackbar.make(extraMealSaveButton, "Successfully added Meal "+allMeals[index].name, Snackbar.LENGTH_LONG).setAction("Action", null)
                     val snackbarView = snackbar.view
                     snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
                     val textView =
@@ -463,9 +485,12 @@ class Search_By_Ingredient : AppCompatActivity() {
                     snackbar.show()
                 }
 
+
+                //removing null values
                 val mealIngListWithoutNulls: List<String>? = allMeals[index].ingredients?.toList()
                 val mealMeListWithoutNulls: List<String>? = allMeals[index].measure?.toList()
 
+                //removing "", " " , "  " values
                 val filteredList_ing = ArrayList<String>()
                 val filteredList_me = ArrayList<String>()
 
@@ -572,30 +597,31 @@ class Search_By_Ingredient : AppCompatActivity() {
         return true
     }
 
+    //
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString("searchText", searchTextField.text.toString())
         outState.putBoolean("isCardPopUp", isCardPopUp)
-        println(issavedAlldatabase)
         outState.putBoolean("issavedAlldatabase", issavedAlldatabase)
-
-
+        outState.putIntegerArrayList("selected_card_list", ArrayList(selected_card_list))
     }
 
+    //
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         searchText = savedInstanceState.getString("searchText").toString()
         isCardPopUp = savedInstanceState.getBoolean("isCardPopUp")
         issavedAlldatabase = savedInstanceState.getBoolean("issavedAlldatabase")
+        selected_card_list= savedInstanceState.getIntegerArrayList("selected_card_list") as ArrayList<Int>
 
         whenRotateSet()
     }
 
+    //
     private fun whenRotateSet() {
         searchTextField.setText(searchText)
 
         if (isCardPopUp) search_fun()
-
     }
 
 
@@ -604,6 +630,5 @@ class Search_By_Ingredient : AppCompatActivity() {
         if (mydialog != null && mydialog!!.isShowing()) {
             mydialog!!.dismiss()
         }
-
     }
 }

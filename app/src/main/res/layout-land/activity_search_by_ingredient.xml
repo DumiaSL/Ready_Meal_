@@ -57,8 +57,9 @@
                 android:drawableEnd="@android:drawable/ic_menu_search"
                 android:elevation="25dp"
                 android:fontFamily="@font/poppins_medium"
-                android:hint="Seaech Here"
+                android:hint="Search Here"
                 android:inputType="textPersonName"
+                android:paddingLeft="32dp"
                 android:textAlignment="center" />
 
             <Button
