@@ -45,17 +45,17 @@ import java.net.UnknownHostException
 
 
 class Search_By_Ingredient : AppCompatActivity() {
-    var allMeals  = arrayListOf<Meals>();
+    var allMeals = arrayListOf<Meals>();
     lateinit var cardScroll: LinearLayout
-    lateinit var linearLayout : LinearLayout
-    lateinit var mealDao : MealDao
+    lateinit var linearLayout: LinearLayout
+    lateinit var mealDao: MealDao
     var mydialog: Dialog? = null
-    lateinit var Controllist:ArrayList<Button>
-    lateinit var searchButton:Button
-    lateinit var searchTextField:EditText
-    lateinit var addDbMeals:Button
+    lateinit var Controllist: ArrayList<Button>
+    lateinit var searchButton: Button
+    lateinit var searchTextField: EditText
+    lateinit var addDbMeals: Button
     lateinit var searchText: String
-    var isCardPopUp=false
+    var isCardPopUp = false
     var issavedAlldatabase = false
     lateinit var selected_card_list: ArrayList<Int>
 
@@ -67,7 +67,7 @@ class Search_By_Ingredient : AppCompatActivity() {
         val db = Room.databaseBuilder(this, AppDatabase::class.java, "mealdatabase").build()
         mealDao = db.mealDao()
 
-        mydialog=Dialog(this)
+        mydialog = Dialog(this)
         Controllist = ArrayList()
         selected_card_list = ArrayList()
 
@@ -81,11 +81,12 @@ class Search_By_Ingredient : AppCompatActivity() {
             searchText = savedInstanceState.getString("searchText").toString()
             isCardPopUp = savedInstanceState.getBoolean("isCardPopUp")
             issavedAlldatabase = savedInstanceState.getBoolean("issavedAlldatabase")
-            selected_card_list= savedInstanceState.getIntegerArrayList("selected_card_list") as ArrayList<Int>
+            selected_card_list =
+                savedInstanceState.getIntegerArrayList("selected_card_list") as ArrayList<Int>
         }
 
         //hide add all meal button
-        addDbMeals.isEnabled=false
+        addDbMeals.isEnabled = false
 
 
         //when press add all meal button
@@ -101,14 +102,19 @@ class Search_By_Ingredient : AppCompatActivity() {
                     }
                 }
             }
-            addDbMeals.isEnabled=false
+            addDbMeals.isEnabled = false
             issavedAlldatabase = true
 
-            //
-            val snackbar = Snackbar.make(addDbMeals, "Successfully added all Meals to DB", Snackbar.LENGTH_LONG).setAction("Action", null)
+            //Toast Message
+            val snackbar = Snackbar.make(
+                addDbMeals,
+                "Successfully added all Meals to DB",
+                Snackbar.LENGTH_LONG
+            ).setAction("Action", null)
             val snackbarView = snackbar.view
             snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
-            val textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+            val textView =
+                snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
             textView.setTextColor(Color.BLACK)
             textView.setTypeface(null, Typeface.BOLD)
             textView.textSize = 16f
@@ -118,10 +124,11 @@ class Search_By_Ingredient : AppCompatActivity() {
         //when press search keyboard enter button
         searchTextField.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                // Perform your action here
+                //
                 issavedAlldatabase = false
                 selected_card_list = ArrayList()
                 search_fun()
+
                 return@OnKeyListener true
             }
             false
@@ -129,7 +136,7 @@ class Search_By_Ingredient : AppCompatActivity() {
 
         //when press the search button
         searchButton.setOnClickListener {
-            issavedAlldatabase= false
+            issavedAlldatabase = false
             selected_card_list = ArrayList()
             search_fun()
         }
@@ -143,11 +150,12 @@ class Search_By_Ingredient : AppCompatActivity() {
         imm.hideSoftInputFromWindow(searchTextField.windowToken, 0)
 //        issavedAlldatabase=false
 
-        if (searchTextField.text.isNotEmpty()){
+        if (searchTextField.text.isNotEmpty()) {
             try {
                 // collecting all the JSON string
                 val stb = StringBuilder()
-                val url_string = "https://www.themealdb.com/api/json/v1/1/search.php?s="+searchTextField.text.toString()
+                val url_string =
+                    "https://www.themealdb.com/api/json/v1/1/search.php?s=" + searchTextField.text.toString()
                 val url = URL(url_string)
                 val con: HttpURLConnection = url.openConnection() as HttpURLConnection
                 runBlocking {
@@ -162,23 +170,28 @@ class Search_By_Ingredient : AppCompatActivity() {
                             if (::linearLayout.isInitialized) {
                                 runOnUiThread {
                                     cardScroll.removeAllViews()
-                                    addDbMeals.isEnabled=false
+                                    addDbMeals.isEnabled = false
                                 }
                             }
 
                             //checking is melas have
-                            if (parseJSON(stb)){
+                            if (parseJSON(stb)) {
                                 //refresh screen
                                 runOnUiThread {
                                     addDbMeals.isEnabled = !issavedAlldatabase
 
                                     createMealCards()
                                 }
-                            }else{
-                                val snackbar = Snackbar.make(searchButton, "No Meals Found !!", Snackbar.LENGTH_LONG).setAction("Action", null)
+                            } else {
+                                val snackbar = Snackbar.make(
+                                    searchButton,
+                                    "No Meals Found !!",
+                                    Snackbar.LENGTH_LONG
+                                ).setAction("Action", null)
                                 val snackbarView = snackbar.view
                                 snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
-                                val textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+                                val textView =
+                                    snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
                                 textView.setTextColor(Color.BLACK)
                                 textView.setTypeface(null, Typeface.BOLD)
                                 textView.textSize = 16f
@@ -187,29 +200,34 @@ class Search_By_Ingredient : AppCompatActivity() {
                         }
                     }
                 }
-            }
-            catch (error : UnknownHostException){
-                val snackbar = Snackbar.make(searchButton, "No Internet Connection !!", Snackbar.LENGTH_LONG).setAction("Action", null)
+            } catch (error: UnknownHostException) {
+                val snackbar =
+                    Snackbar.make(searchButton, "No Internet Connection !!", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null)
                 val snackbarView = snackbar.view
                 snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
-                val textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+                val textView =
+                    snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
                 textView.setTextColor(Color.BLACK)
                 textView.setTypeface(null, Typeface.BOLD)
                 textView.textSize = 16f
                 snackbar.show()
             }
-        }else{
+        } else {
             if (::linearLayout.isInitialized) {
                 runOnUiThread {
                     isCardPopUp = false
                     cardScroll.removeAllViews()
-                    addDbMeals.isEnabled=false
+                    addDbMeals.isEnabled = false
                 }
             }
-            val snackbar = Snackbar.make(searchButton, "Please Enter Ingredient !!", Snackbar.LENGTH_LONG).setAction("Action", null)
+            val snackbar =
+                Snackbar.make(searchButton, "Please Enter Ingredient !!", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null)
             val snackbarView = snackbar.view
             snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
-            val textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+            val textView =
+                snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
             textView.setTextColor(Color.BLACK)
             textView.setTypeface(null, Typeface.BOLD)
             textView.textSize = 16f
@@ -217,10 +235,9 @@ class Search_By_Ingredient : AppCompatActivity() {
         }
     }
 
-
     //Creating meal card on ui
     private fun createMealCards() {
-        isCardPopUp=true
+        isCardPopUp = true
         Controllist.clear()
         for (index in 0 until allMeals.size) {
 //            var isSelect = false
@@ -265,16 +282,20 @@ class Search_By_Ingredient : AppCompatActivity() {
                 contentDescription = context.getString(R.string.app_name)
             }
 
-            var bitmapDrawable: BitmapDrawable? =null
+            var bitmapDrawable: BitmapDrawable? = null
             Glide.with(this)
                 .asBitmap()
                 .load(allMeals[index].mealThumb)
-                .into(object : CustomTarget<Bitmap>(){
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
                         imageView.setImageBitmap(resource)
 
                         bitmapDrawable = BitmapDrawable(resources, resource)
                     }
+
                     override fun onLoadCleared(placeholder: Drawable?) {
                         // this is called when imageView is cleared on lifecycle call or for
                         // some other reason.
@@ -288,7 +309,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             mealName.gravity = Gravity.CENTER_HORIZONTAL
             mealName.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
             mealName.setTextColor(ContextCompat.getColor(this, R.color.black))
-            mealName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35f)
+            mealName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 32f)
 
             val mealCategory = TextView(this)
             mealCategory.text = "Category : " + allMeals[index].category
@@ -308,8 +329,8 @@ class Search_By_Ingredient : AppCompatActivity() {
             innerLinearLayout.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
-            ) .apply {
-                setMargins(0, 10,0, 0)
+            ).apply {
+                setMargins(0, 10, 0, 0)
             }// set layout params
             innerLinearLayout.orientation = LinearLayout.VERTICAL // set orientation
 
@@ -325,7 +346,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             button.setTextColor(Color.parseColor("#0E0E0E"))
             button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
             button.setTypeface(button.typeface, Typeface.BOLD)
-            if (!addDbMeals.isEnabled || selected_card_list?.contains(index)!! ){
+            if (!addDbMeals.isEnabled || selected_card_list?.contains(index)!!) {
                 println("reached")
                 button.isEnabled = false
                 button.setText("Already Added to DataBase")
@@ -346,7 +367,11 @@ class Search_By_Ingredient : AppCompatActivity() {
                 button.setTextColor(Color.WHITE)
 
                 //Toast message
-                val snackbar = Snackbar.make(button, "Successfully added Meal "+allMeals[index].name, Snackbar.LENGTH_LONG).setAction("Action", null)
+                val snackbar = Snackbar.make(
+                    button,
+                    "Successfully added Meal " + allMeals[index].name,
+                    Snackbar.LENGTH_LONG
+                ).setAction("Action", null)
                 val snackbarView = snackbar.view
                 snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
                 val textView =
@@ -366,10 +391,10 @@ class Search_By_Ingredient : AppCompatActivity() {
                 val extraMealName = mydialog!!.findViewById<TextView>(R.id.extra_meal_name)
                 val extraMealImage = mydialog!!.findViewById<ImageView>(R.id.extra_meal_image)
                 val extraMealCategery = mydialog!!.findViewById<TextView>(R.id.extra_categgory_text)
-                val extraMealArea= mydialog!!.findViewById<TextView>(R.id.extra_area_text)
-                val extraMealdrink= mydialog!!.findViewById<TextView>(R.id.extra_drink_text)
-                val extraMealTags= mydialog!!.findViewById<TextView>(R.id.extra_tag_text)
-                val extraMealInstuctions= mydialog!!.findViewById<TextView>(R.id.extra_ins_text)
+                val extraMealArea = mydialog!!.findViewById<TextView>(R.id.extra_area_text)
+                val extraMealdrink = mydialog!!.findViewById<TextView>(R.id.extra_drink_text)
+                val extraMealTags = mydialog!!.findViewById<TextView>(R.id.extra_tag_text)
+                val extraMealInstuctions = mydialog!!.findViewById<TextView>(R.id.extra_ins_text)
                 val extraMealSource = mydialog!!.findViewById<TextView>(R.id.extra_source)
                 val extraMealImgScouce = mydialog!!.findViewById<TextView>(R.id.extra_imagesource)
                 val extraMealYoutube = mydialog!!.findViewById<TextView>(R.id.extra_youtube)
@@ -381,73 +406,77 @@ class Search_By_Ingredient : AppCompatActivity() {
 
                 extraMealName.text = allMeals[index].name
                 extraMealImage.setImageDrawable(bitmapDrawable)
-                extraMealCategery.text = "Category : "+ allMeals[index].category
-                extraMealArea.text = "Area : "+ allMeals[index].area
+                extraMealCategery.text = "Category : " + allMeals[index].category
+                extraMealArea.text = "Area : " + allMeals[index].area
 
-                if (allMeals[index].drinkAlternate!=null){
+                if (allMeals[index].drinkAlternate != null) {
                     extraMealdrink.text = "DrinkAlternate : " + allMeals[index].drinkAlternate
-                }else{
+                } else {
                     extraMealdrink.isVisible = false
                 }
 
-                if (allMeals[index].source!=null){
-                    extraMealSource.text = "Source : "+allMeals[index].source
+                if (allMeals[index].source != null) {
+                    extraMealSource.text = "Source : " + allMeals[index].source
                     extraMealSource.setOnClickListener {
-                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(allMeals[index].source))
+                        val browserIntent =
+                            Intent(Intent.ACTION_VIEW, Uri.parse(allMeals[index].source))
                         startActivity(browserIntent)
                     }
-                }else{
+                } else {
                     extraMealSource.isVisible = false
                 }
 
-                if (allMeals[index].youtube!=null){
-                    extraMealYoutube.text = "Youtube : "+  allMeals[index].youtube
+                if (allMeals[index].youtube != null) {
+                    extraMealYoutube.text = "Youtube : " + allMeals[index].youtube
                     extraMealYoutube.setOnClickListener {
-                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(allMeals[index].youtube))
+                        val browserIntent =
+                            Intent(Intent.ACTION_VIEW, Uri.parse(allMeals[index].youtube))
                         startActivity(browserIntent)
                     }
-                }else{
+                } else {
                     extraMealYoutube.isVisible = false
                 }
 
-                if (allMeals[index].imageSource!=null){
-                    extraMealImgScouce.text = "Image Source : "+ allMeals[index].imageSource
+                if (allMeals[index].imageSource != null) {
+                    extraMealImgScouce.text = "Image Source : " + allMeals[index].imageSource
                     extraMealImgScouce.setOnClickListener {
-                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(allMeals[index].imageSource))
+                        val browserIntent =
+                            Intent(Intent.ACTION_VIEW, Uri.parse(allMeals[index].imageSource))
                         startActivity(browserIntent)
                     }
-                }else{
+                } else {
                     extraMealImgScouce.isVisible = false
                 }
 
-                if (allMeals[index].creativeCommonsConfirmed!=null){
-                    extraMealCreative.text = "Creative Commons Confirmed : " + allMeals[index].creativeCommonsConfirmed
-                }else{
+                if (allMeals[index].creativeCommonsConfirmed != null) {
+                    extraMealCreative.text =
+                        "Creative Commons Confirmed : " + allMeals[index].creativeCommonsConfirmed
+                } else {
                     extraMealCreative.isVisible = false
                 }
 
-                if (allMeals[index].dateModified!=null){
+                if (allMeals[index].dateModified != null) {
                     extraMealDate.text = "Date Modified : " + allMeals[index].dateModified
-                }else{
+                } else {
                     extraMealDate.isVisible = false
                 }
 
-                if (allMeals[index].tags!=null){
+                if (allMeals[index].tags != null) {
                     extraMealTags.text = allMeals[index].tags
-                }else{
+                } else {
                     extraMealTags.text = "- -"
                 }
 
-                if (allMeals[index].instructions != null){
+                if (allMeals[index].instructions != null) {
                     extraMealInstuctions.text = allMeals[index].instructions
                     extraMealInstuctions.justificationMode = JUSTIFICATION_MODE_INTER_WORD
-                }else{
+                } else {
                     extraMealdrink.text = "- -"
                 }
 
                 //
-                if (!button.isEnabled){
-                    extraMealSaveButton.isEnabled= false
+                if (!button.isEnabled) {
+                    extraMealSaveButton.isEnabled = false
                     extraMealSaveButton.setText("Already Added to DataBase")
                     extraMealSaveButton.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
                     extraMealSaveButton.setTextColor(Color.WHITE)
@@ -474,7 +503,11 @@ class Search_By_Ingredient : AppCompatActivity() {
                     extraMealSaveButton.setTextColor(Color.WHITE)
 
                     //Toast message
-                    val snackbar = Snackbar.make(extraMealSaveButton, "Successfully added Meal "+allMeals[index].name, Snackbar.LENGTH_LONG).setAction("Action", null)
+                    val snackbar = Snackbar.make(
+                        extraMealSaveButton,
+                        "Successfully added Meal " + allMeals[index].name,
+                        Snackbar.LENGTH_LONG
+                    ).setAction("Action", null)
                     val snackbarView = snackbar.view
                     snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
                     val textView =
@@ -495,11 +528,13 @@ class Search_By_Ingredient : AppCompatActivity() {
                 val filteredList_me = ArrayList<String>()
 
                 if (mealIngListWithoutNulls != null) {
-                    for (index in 0 until mealIngListWithoutNulls.size){
-                        if (mealIngListWithoutNulls[index].isNotEmpty() && mealIngListWithoutNulls[index]!= "  " &&  mealIngListWithoutNulls[index]!= "   "){
+                    for (index in 0 until mealIngListWithoutNulls.size) {
+                        if (mealIngListWithoutNulls[index].isNotEmpty() && mealIngListWithoutNulls[index] != "  " && mealIngListWithoutNulls[index] != "   ") {
                             filteredList_ing.add(mealIngListWithoutNulls.get(index))
                         }
-                        if (mealMeListWithoutNulls?.get(index)?.isNotEmpty()!! &&  mealIngListWithoutNulls[index]!= "  " &&  mealIngListWithoutNulls[index]!= "   "){
+                        if (mealMeListWithoutNulls?.get(index)
+                                ?.isNotEmpty()!! && mealIngListWithoutNulls[index] != "  " && mealIngListWithoutNulls[index] != "   "
+                        ) {
                             filteredList_me.add(mealMeListWithoutNulls.get(index))
                         }
                     }
@@ -553,7 +588,7 @@ class Search_By_Ingredient : AppCompatActivity() {
     private fun getList(jsonMealList: JSONObject, typeName: String): ArrayList<String> {
         val temp = ArrayList<String>()
         for (i in 1..20) {
-            val type = jsonMealList[typeName+i.toString()]as? String ?: null
+            val type = jsonMealList[typeName + i.toString()] as? String ?: null
             temp.add(type.toString())
         }
         return temp;
@@ -562,14 +597,14 @@ class Search_By_Ingredient : AppCompatActivity() {
     //
     private fun parseJSON(stb: java.lang.StringBuilder): Boolean {
         //reset All meal List
-        allMeals  = arrayListOf<Meals>();
+        allMeals = arrayListOf<Meals>();
 
         // this contains the full JSON returned by the Web Service
         val json = JSONObject(stb.toString())
         // Information about all the Meals extracted by this function
-        if (json.isNull("meals")){
+        if (json.isNull("meals")) {
             return false
-        }else {
+        } else {
             val jsonArray: JSONArray = json.getJSONArray("meals")
             // extract all the books from the JSON array
             for (i in 0 until jsonArray.length()) {
@@ -579,16 +614,17 @@ class Search_By_Ingredient : AppCompatActivity() {
                     name = jsonMealList["strMeal"] as? String ?: null,
                     drinkAlternate = jsonMealList["strDrinkAlternate"] as? String ?: null,
                     category = jsonMealList["strCategory"] as? String ?: null,
-                    area = jsonMealList["strArea"]as? String ?: null,
+                    area = jsonMealList["strArea"] as? String ?: null,
                     instructions = jsonMealList["strInstructions"] as? String ?: null,
                     mealThumb = jsonMealList["strMealThumb"] as? String ?: null,
-                    ingredients = getList(jsonMealList,"strIngredient"),
-                    measure = getList(jsonMealList,"strMeasure"),
+                    ingredients = getList(jsonMealList, "strIngredient"),
+                    measure = getList(jsonMealList, "strMeasure"),
                     tags = jsonMealList["strTags"] as? String ?: null,
                     youtube = jsonMealList["strYoutube"] as? String ?: null,
                     source = jsonMealList["strSource"] as? String ?: null,
                     imageSource = jsonMealList["strImageSource"] as? String ?: null,
-                    creativeCommonsConfirmed = jsonMealList["strCreativeCommonsConfirmed"] as? String ?: null,
+                    creativeCommonsConfirmed = jsonMealList["strCreativeCommonsConfirmed"] as? String
+                        ?: null,
                     dateModified = jsonMealList["dateModified"] as? String ?: null,
                 )
                 allMeals.add(meal)
@@ -612,7 +648,8 @@ class Search_By_Ingredient : AppCompatActivity() {
         searchText = savedInstanceState.getString("searchText").toString()
         isCardPopUp = savedInstanceState.getBoolean("isCardPopUp")
         issavedAlldatabase = savedInstanceState.getBoolean("issavedAlldatabase")
-        selected_card_list= savedInstanceState.getIntegerArrayList("selected_card_list") as ArrayList<Int>
+        selected_card_list =
+            savedInstanceState.getIntegerArrayList("selected_card_list") as ArrayList<Int>
 
         whenRotateSet()
     }
