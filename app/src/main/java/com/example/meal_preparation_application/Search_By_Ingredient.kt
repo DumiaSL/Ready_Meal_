@@ -54,7 +54,6 @@ class Search_By_Ingredient : AppCompatActivity() {
     lateinit var searchButton:Button
     lateinit var searchTextField:EditText
     lateinit var addDbMeals:Button
-
     lateinit var searchText: String
     var isCardPopUp=false
     var issavedAlldatabase = false
@@ -64,8 +63,7 @@ class Search_By_Ingredient : AppCompatActivity() {
         setContentView(R.layout.activity_search_by_ingredient)
 
         //connecting with local data base named "mealdatabase"
-        val db = Room.databaseBuilder(this, AppDatabase::class.java,
-            "mealdatabase").build()
+        val db = Room.databaseBuilder(this, AppDatabase::class.java, "mealdatabase").build()
         mealDao = db.mealDao()
 
         mydialog=Dialog(this)
@@ -77,8 +75,9 @@ class Search_By_Ingredient : AppCompatActivity() {
         addDbMeals = findViewById<Button>(R.id.saveAllMeal_button)
 
         if (savedInstanceState != null) {
-
             searchText = savedInstanceState.getString("searchText").toString()
+            isCardPopUp = savedInstanceState.getBoolean("isCardPopUp")
+            issavedAlldatabase = savedInstanceState.getBoolean("issavedAlldatabase")
         }
 
         //hide add all meal button
@@ -104,15 +103,14 @@ class Search_By_Ingredient : AppCompatActivity() {
             val snackbar = Snackbar.make(addDbMeals, "Successfully added all Meals to DB", Snackbar.LENGTH_LONG).setAction("Action", null)
             val snackbarView = snackbar.view
             snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
-            val textView =
-                snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+            val textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
             textView.setTextColor(Color.BLACK)
             textView.setTypeface(null, Typeface.BOLD)
             textView.textSize = 16f
             snackbar.show()
         }
 
-        //when press search button
+        //when press search keyboard enter button
         searchTextField.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 // Perform your action here
@@ -122,6 +120,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             false
         })
 
+        //when press the search button
         searchButton.setOnClickListener {
             search_fun()
         }
@@ -133,10 +132,10 @@ class Search_By_Ingredient : AppCompatActivity() {
         //keyboard hide
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(searchTextField.windowToken, 0)
+//        issavedAlldatabase=false
 
         if (searchTextField.text.isNotEmpty()){
             try {
-
 
                 // collecting all the JSON string
                 val stb = StringBuilder()
@@ -163,7 +162,8 @@ class Search_By_Ingredient : AppCompatActivity() {
                             if (parseJSON(stb)){
                                 //refresh screen
                                 runOnUiThread {
-                                    addDbMeals.isEnabled=true
+                                    addDbMeals.isEnabled = !issavedAlldatabase
+
                                     createMealCards()
                                 }
                             }else{
@@ -202,8 +202,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             val snackbar = Snackbar.make(searchButton, "Please Enter Ingredient !!", Snackbar.LENGTH_LONG).setAction("Action", null)
             val snackbarView = snackbar.view
             snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
-            val textView =
-                snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+            val textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
             textView.setTextColor(Color.BLACK)
             textView.setTypeface(null, Typeface.BOLD)
             textView.textSize = 16f
@@ -217,7 +216,7 @@ class Search_By_Ingredient : AppCompatActivity() {
         isCardPopUp=true
         Controllist.clear()
         for (index in 0 until allMeals.size) {
-            var isSelect = false
+//            var isSelect = false
             linearLayout = LinearLayout(this) // create a new LinearLayout
             linearLayout.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -315,6 +314,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             )
             button.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFD200"))
             button.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
+            button.isEnabled = addDbMeals.isEnabled
             button.text = "Save meal to Database"
             button.setTextColor(Color.parseColor("#0E0E0E"))
             button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
@@ -325,7 +325,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                         mealDao.insert(allMeals[index]);
                     }
                 }
-                isSelect = true
+//                isSelect = true
                 button.isEnabled = false
                 button.setText("Already Added to DataBase")
                 button.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
@@ -344,7 +344,7 @@ class Search_By_Ingredient : AppCompatActivity() {
 
             //
             innerLinearLayout.setOnClickListener {
-                if (!button.isEnabled)isSelect=true
+//                if (!button.isEnabled)isSelect=true
 
                 mydialog!!.setContentView(R.layout.activity_extra_meal_details)
                 val extraMealSaveButton = mydialog!!.findViewById<TextView>(R.id.Extrabutton)
@@ -426,7 +426,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                     extraMealdrink.text = "- -"
                 }
 
-                if (isSelect){
+                if (!button.isEnabled){
                     extraMealSaveButton.isEnabled = false
                     extraMealSaveButton.setText("Already Added to DataBase")
                     extraMealSaveButton.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
@@ -587,7 +587,6 @@ class Search_By_Ingredient : AppCompatActivity() {
         searchText = savedInstanceState.getString("searchText").toString()
         isCardPopUp = savedInstanceState.getBoolean("isCardPopUp")
         issavedAlldatabase = savedInstanceState.getBoolean("issavedAlldatabase")
-        println(issavedAlldatabase)
 
         whenRotateSet()
     }
@@ -597,9 +596,6 @@ class Search_By_Ingredient : AppCompatActivity() {
 
         if (isCardPopUp) search_fun()
 
-        if (issavedAlldatabase){
-            addDbMeals.isEnabled=false
-        }
     }
 
 
