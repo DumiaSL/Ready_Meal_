@@ -40,7 +40,7 @@
         app:layout_constraintTop_toBottomOf="@+id/add_button" />
 
     <Button
-        android:id="@+id/search_meal_button"
+        android:id="@+id/search_by_meal_button"
         android:layout_width="278dp"
         android:layout_height="58dp"
         android:layout_marginTop="20dp"

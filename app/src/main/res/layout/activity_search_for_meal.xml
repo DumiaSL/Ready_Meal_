@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Search_for_Meal">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        android:textSize="34sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/liner_layout"
+        android:backgroundTint="#FFD200"
+        android:elevation="20dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp">
+
+        <EditText
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:autofillHints=""
+            android:background="@drawable/textfield_style"
+            android:backgroundTint="#F8F0A6"
+            android:drawableEnd="@android:drawable/ic_menu_search"
+            android:elevation="25dp"
+            android:fontFamily="@font/poppins_medium"
+            android:foregroundGravity="center_vertical"
+            android:hint="@string/search_here_meal_or_ingredient_nname"
+            android:inputType="textPersonName"
+            android:paddingStart="35dp"
+            android:textAlignment="center" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+
+        <GridView
+            android:id="@+id/grid_view_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:horizontalSpacing="6dp"
+            android:numColumns="3"
+            android:verticalSpacing="6dp">
+
+        </GridView>
+    </ScrollView>
+</LinearLayout>

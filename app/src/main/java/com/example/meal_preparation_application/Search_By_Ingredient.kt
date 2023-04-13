@@ -68,7 +68,9 @@ class Search_By_Ingredient : AppCompatActivity() {
         mealDao = db.mealDao()
 
         mydialog = Dialog(this)
+        //
         Controllist = ArrayList()
+        //
         selected_card_list = ArrayList()
 
         searchButton = findViewById<Button>(R.id.search_button)
@@ -87,7 +89,6 @@ class Search_By_Ingredient : AppCompatActivity() {
 
         //hide add all meal button
         addDbMeals.isEnabled = false
-
 
         //when press add all meal button
         addDbMeals.setOnClickListener {
@@ -151,9 +152,11 @@ class Search_By_Ingredient : AppCompatActivity() {
 //        issavedAlldatabase=false
 
         if (searchTextField.text.isNotEmpty()) {
+            //
             try {
                 // collecting all the JSON string
                 val stb = StringBuilder()
+                //
                 val url_string =
                     "https://www.themealdb.com/api/json/v1/1/search.php?s=" + searchTextField.text.toString()
                 val url = URL(url_string)
@@ -180,6 +183,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                                 runOnUiThread {
                                     addDbMeals.isEnabled = !issavedAlldatabase
 
+                                    //
                                     createMealCards()
                                 }
                             } else {
@@ -201,6 +205,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                     }
                 }
             } catch (error: UnknownHostException) {
+                //No internet toast message
                 val snackbar =
                     Snackbar.make(searchButton, "No Internet Connection !!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
@@ -214,6 +219,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                 snackbar.show()
             }
         } else {
+            //
             if (::linearLayout.isInitialized) {
                 runOnUiThread {
                     isCardPopUp = false
@@ -221,6 +227,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                     addDbMeals.isEnabled = false
                 }
             }
+            //Toast Message
             val snackbar =
                 Snackbar.make(searchButton, "Please Enter Ingredient !!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null)
@@ -238,9 +245,10 @@ class Search_By_Ingredient : AppCompatActivity() {
     //Creating meal card on ui
     private fun createMealCards() {
         isCardPopUp = true
+        //
         Controllist.clear()
         for (index in 0 until allMeals.size) {
-//            var isSelect = false
+
             linearLayout = LinearLayout(this) // create a new LinearLayout
             linearLayout.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -251,6 +259,7 @@ class Search_By_Ingredient : AppCompatActivity() {
 
             linearLayout.orientation = LinearLayout.VERTICAL // set orientation
 
+            //creating card
             val cardView = CardView(this) // create a new CardView
             cardView.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -263,6 +272,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             cardView.preventCornerOverlap = true
             cardView.radius = 40f
 
+            //creating linearlayout for card-view
             val innerLinearLayout = LinearLayout(this) // create an inner LinearLayout
             innerLinearLayout.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -270,6 +280,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             ) // set layout params
             innerLinearLayout.orientation = LinearLayout.VERTICAL // set orientation
 
+            //
             val imageView = ImageView(this).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     460,
@@ -282,6 +293,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                 contentDescription = context.getString(R.string.app_name)
             }
 
+            //load the image and covert to bitmap for later use
             var bitmapDrawable: BitmapDrawable? = null
             Glide.with(this)
                 .asBitmap()
@@ -304,6 +316,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                     }
                 })
 
+            // creating text-view for meal name
             val mealName = TextView(this)
             mealName.text = allMeals[index].name
             mealName.gravity = Gravity.CENTER_HORIZONTAL
@@ -311,6 +324,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             mealName.setTextColor(ContextCompat.getColor(this, R.color.black))
             mealName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 32f)
 
+            // creating text-view for meal category
             val mealCategory = TextView(this)
             mealCategory.text = "Category : " + allMeals[index].category
             mealCategory.gravity = Gravity.CENTER_HORIZONTAL
@@ -318,6 +332,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             mealCategory.setTextColor(ContextCompat.getColor(this, R.color.black))
             mealCategory.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
 
+            // creating text-view for meal area
             val mealArea = TextView(this)
             mealArea.text = "Area         : " + allMeals[index].area
             mealArea.gravity = Gravity.CENTER_HORIZONTAL
@@ -334,6 +349,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             }// set layout params
             innerLinearLayout.orientation = LinearLayout.VERTICAL // set orientation
 
+            // creating text-view for save to db button
             val button = Button(this)
             button.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -346,6 +362,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             button.setTextColor(Color.parseColor("#0E0E0E"))
             button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
             button.setTypeface(button.typeface, Typeface.BOLD)
+            //
             if (!addDbMeals.isEnabled || selected_card_list?.contains(index)!!) {
                 println("reached")
                 button.isEnabled = false
@@ -353,6 +370,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                 button.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
                 button.setTextColor(Color.WHITE)
             }
+            // when press the card_view save button
             button.setOnClickListener {
                 selected_card_list?.add(index)
                 runBlocking {
@@ -383,7 +401,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             }
             Controllist.add(button)
 
-            //
+            //when press the card_view. Its crate Dialog box
             innerLinearLayout.setOnClickListener {
 
                 mydialog!!.setContentView(R.layout.activity_extra_meal_details)
@@ -526,7 +544,6 @@ class Search_By_Ingredient : AppCompatActivity() {
                 //removing "", " " , "  " values
                 val filteredList_ing = ArrayList<String>()
                 val filteredList_me = ArrayList<String>()
-
                 if (mealIngListWithoutNulls != null) {
                     for (index in 0 until mealIngListWithoutNulls.size) {
                         if (mealIngListWithoutNulls[index].isNotEmpty() && mealIngListWithoutNulls[index] != "  " && mealIngListWithoutNulls[index] != "   ") {
@@ -540,6 +557,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                     }
                 }
 
+                //
                 for (index in 0 until filteredList_ing.size) {
                     val temp_ing = TextView(this)
                     temp_ing.id = View.generateViewId()
@@ -571,7 +589,8 @@ class Search_By_Ingredient : AppCompatActivity() {
                 mydialog!!.show()
             }
 
-            innerLinearLayout.addView(imageView) // add views to inner LinearLayout
+            // add views to inner LinearLayout
+            innerLinearLayout.addView(imageView)
             innerLinearLayout.addView(mealName)
             innerLinearLayout.addView(mealCategory)
             innerLinearLayout.addView(mealArea)
@@ -661,7 +680,7 @@ class Search_By_Ingredient : AppCompatActivity() {
         if (isCardPopUp) search_fun()
     }
 
-
+    //
     override fun onPause() {
         super.onPause()
         if (mydialog != null && mydialog!!.isShowing()) {
