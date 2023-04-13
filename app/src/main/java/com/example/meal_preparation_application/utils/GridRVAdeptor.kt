@@ -2,12 +2,20 @@ package com.example.meal_preparation_application.utils
 
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.meal_preparation_application.R
 
 // on below line we are creating an
@@ -22,8 +30,9 @@ internal class GridRVAdeptor(
     // in base adapter class we are creating variables
     // for layout inflater, course image view and course text view.
     private var layoutInflater: LayoutInflater? = null
-    private lateinit var courseTV: TextView
-    private lateinit var courseIV: ImageView
+    private lateinit var minicard_name: TextView
+    private lateinit var minicard_category: TextView
+    private lateinit var minicard_image: LinearLayout
 
     // below method is use to return the count of course list
     override fun getCount(): Int {
@@ -41,7 +50,7 @@ internal class GridRVAdeptor(
     }
 
     // in below function we are getting individual item of grid view.
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var convertView = convertView
         // on blow line we are checking if layout inflater
         // is null, if it is null we are initializing it.
@@ -58,12 +67,37 @@ internal class GridRVAdeptor(
         }
         // on below line we are initializing our course image view
         // and course text view with their ids.
-        courseIV = convertView!!.findViewById(R.id.idIVCourse)
-        courseTV = convertView!!.findViewById(R.id.idTVCourse)
+        minicard_image = convertView!!.findViewById(R.id.idIVCourse)
+        minicard_name = convertView.findViewById(R.id.meal_name)
+        minicard_category = convertView.findViewById(R.id.meal_cat)
         // on below line we are setting image for our course image view.
-        courseIV.setImageResource(courseList.get(position).courseImg)
+
         // on below line we are setting text in our course text view.
-        courseTV.setText(courseList.get(position).courseName)
+        minicard_name.setText(courseList[position].meal_name)
+        minicard_category.setText(courseList[position].meal_category)
+        var bitmapDrawable: BitmapDrawable? = null
+        println(courseList[position].meal_thumbnail)
+        Glide.with(convertView)
+            .asBitmap()
+            .load(courseList[position].meal_thumbnail)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap>?
+                ) {
+                    val drawable = BitmapDrawable(context.resources, resource)
+                    drawable.alpha = 150
+                    minicard_image.background = drawable
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    // this is called when imageView is cleared on lifecycle call or for
+                    // some other reason.
+                    // if you are referencing the bitmap somewhere else too other than this imageView
+                    // clear it here as you can no longer have the bitmap
+                }
+            })
+//        minicard_image.background =  courseList[position].meal_thumbnail
         // at last we are returning our convert view.
         return convertView
     }

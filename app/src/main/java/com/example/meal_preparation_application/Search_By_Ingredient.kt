@@ -38,6 +38,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.FileNotFoundException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
@@ -208,6 +209,19 @@ class Search_By_Ingredient : AppCompatActivity() {
                 //No internet toast message
                 val snackbar =
                     Snackbar.make(searchButton, "No Internet Connection !!", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null)
+                val snackbarView = snackbar.view
+                snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
+                val textView =
+                    snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+                textView.setTextColor(Color.BLACK)
+                textView.setTypeface(null, Typeface.BOLD)
+                textView.textSize = 16f
+                snackbar.show()
+            }catch (error : FileNotFoundException){
+                //No site reached toast message
+                val snackbar =
+                    Snackbar.make(searchButton, "Sorry : Can't reached Server !!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                 val snackbarView = snackbar.view
                 snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))

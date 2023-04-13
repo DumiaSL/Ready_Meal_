@@ -9,4 +9,5 @@
     <string name="searchButton"> Retrieve Meals</string>
     <string name="ready_meal">READY MEAL</string>
     <string name="search_here_meal_or_ingredient_nname">Search Here Meal or Ingredient \nname</string>
+    <string name="meal_image">meal Image</string>
 </resources>
