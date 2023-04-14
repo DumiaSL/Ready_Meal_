@@ -26,76 +26,30 @@ data class Meals(
     @ColumnInfo(name = "dateModified") var dateModified: String? = null
 ){
     override fun toString(): String {
-        val output =
+        var output =
             "\"Meal\" : \"$name\",\n"+
-            "\"Meal\" : \"$drinkAlternate\",\n"+
-            "\"Meal\" : \"$category\",\n"+
-            "\"Meal\" : \"$area\",\n"+
-            "\"Meal\" : \"$instructions\",\n"+
-            "\"Meal\" : \"$mealThumb\",\n"+
-            "\"Meal\" : \"$tags\",\n"+
-            "\"Meal\" : \"$youtube\",\n"+
-            "\"Meal\" : \"$source\",\n"+
-            "\"Meal\" : \"$imageSource\",\n"
+            "\"DrinkAlternate\" : \"$drinkAlternate\",\n"+
+            "\"Category\" : \"$category\",\n"+
+            "\"Area\" : \"$area\",\n"+
+            "\"Instructions\" : \"$instructions\",\n"+
+            "\"MealThumbnail\" : \"$mealThumb\",\n"+
+            "\"Tags\" : \"$tags\",\n"+
+            "\"Youtube\" : \"$youtube\",\n"+
+            "\"Source\" : \"$source\",\n"+
+            "\"imageSource\" : \"$imageSource\",\n"
 
-//            "\"Meal\" : \"${ingredients?.get(0)}\",\n"+
-//            "\"Meal\" : \"${ingredients?.get(0)}\",\n"+
-//            "\"Meal\" : \"${ingredients?.get(0)}\",\n"+
-//            "\"Meal\" : \"${ingredients?.get(0)}\",\n"+
-//            "\"Meal\" : \"${ingredients?.get(0)}\",\n"+
-//            "\"Meal\" : \"${ingredients?.get(0)}\",\n"+
-//            "\"Meal\" : \"$name\",\n"+
-//            "\"Meal\" : \"$name\",\n"+
-//            "\"Meal\" : \"$name\",\n"+
-//            "\"Meal\" : \"$name\",\n"+
-//        "Meal":"Chicken Alfredo Primavera",
-//        "DrinkAlternate":null,
-//        "Category":"Chicken",
-//        "Area":"Italian",
-//        "Instructions":"Heat 1 tablespoon of butter and 2 tablespoons of .... ",
-//        "Tags":"Pasta,Meat,Dairy",
-//        "Youtube":"https:\/\/www.youtube.com\/watch?v=qCIbq8HywpQ",
-//        "Ingredient1":"Butter",
-//        3
-//        "Ingredient2":"Olive Oil",
-//        "Ingredient3":"Chicken",
-//        "Ingredient4":"Salt",
-//        "Ingredient5":"Squash",
-//        "Ingredient6":"Broccoli",
-//        "Ingredient7":"mushrooms",
-//        "Ingredient8":"Pepper",
-//        "Ingredient9":"onion",
-//        "Ingredient10":"garlic",
-//        "Ingredient11":"red pepper flakes",
-//        "Ingredient12":"white wine",
-//        "Ingredient13":"milk",
-//        "Ingredient14":"heavy cream",
-//        "Ingredient15":"Parmesan cheese",
-//        "Ingredient16":"bowtie pasta",
-//        "Ingredient17":"Salt",
-//        "Ingredient18":"Pepper",
-//        "Ingredient19":"Parsley",
-//        "Ingredient20":"",
-//        "Measure1":"2 tablespoons",
-//        "Measure2":"3 tablespoons",
-//        "Measure3":"5 boneless",
-//        "Measure4":"1 teaspoon",
-//        "Measure5":"1 cut into 1\/2-inch cubes",
-//        "Measure6":"1 Head chopped",
-//        "Measure7":"8-ounce sliced",
-//        "Measure8":"1 red",
-//        "Measure9":"1 chopped",
-//        "Measure10":"3 cloves",
-//        "Measure11":"1\/2 teaspoon",
-//        "Measure12":"1\/2 cup",
-//        "Measure13":"1\/2 cup",
-//        "Measure14":"1\/2 cup",
-//        "Measure15":"1 cup grated",
-//        "Measure16":"16 ounces",
-//        "Measure17":"pinch",
-//        "Measure18":"pinch ",
-//        "Measure19":"chopped",
-//        "Measure20":"",
+        var formattedIngredients = ""
+        var formattedMeasure = ""
+        var count = 1
+        for (i in 0 until (ingredients?.size!!)) {
+            if (ingredients!![i] != ""){
+                formattedIngredients += ("\"Ingredient\"" + (count) + " : \"" + ingredients!!.get(i)) + "\"\n"
+                formattedMeasure += ("\"Measure\"" + (count) + " : \"" + measure!!.get(i)) + "\"\n"
+                count++
+            }
+        }
+        output+=formattedIngredients+formattedMeasure + "\"CreativeCommonsConfirmed\" : \"$creativeCommonsConfirmed\",\n" +
+                "\"DateModified\" : \"$dateModified\",\n"
         return output
     }
 }

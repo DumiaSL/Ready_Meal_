@@ -366,6 +366,7 @@ class Search_By_Ingredient : AppCompatActivity() {
         normalCardControl.clear()
         jsonCardControl.clear()
         for (index in 0 until allMeals.size) {
+            var isjsonClicked = false
 
             linearLayout = LinearLayout(this) // create a new LinearLayout
             linearLayout.layoutParams = LinearLayout.LayoutParams(
@@ -406,6 +407,31 @@ class Search_By_Ingredient : AppCompatActivity() {
             ) // set layout params
             innerLinearLayout_json.orientation = LinearLayout.VERTICAL // set orientation
 
+            // creating text-view for meal name
+            val jsonmealName = TextView(this)
+            jsonmealName.text = allMeals[index].name
+            jsonmealName.gravity = Gravity.CENTER_HORIZONTAL
+            jsonmealName.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
+            jsonmealName.setTextColor(ContextCompat.getColor(this, R.color.black))
+            jsonmealName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 27f)
+
+            // creating text-view for meal category
+            val jsonmealCategory = TextView(this)
+            jsonmealCategory.text = allMeals[index].category
+            jsonmealCategory.gravity = Gravity.CENTER_HORIZONTAL
+            jsonmealCategory.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
+            jsonmealCategory.setTextColor(ContextCompat.getColor(this, R.color.black))
+            jsonmealCategory.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+
+            // creating text-view for meal category
+            val jsonmealdown = TextView(this)
+            jsonmealdown.text = "⬇️"
+            jsonmealdown.gravity = Gravity.CENTER_HORIZONTAL
+            jsonmealdown.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
+            jsonmealdown.setTextColor(ContextCompat.getColor(this, R.color.black))
+            jsonmealdown.setTextSize(TypedValue.COMPLEX_UNIT_SP, 23f)
+
+
             // creating text-view for meal area
             val jsonText = TextView(this).apply {
                 setPadding(30,35,25,10)
@@ -415,6 +441,19 @@ class Search_By_Ingredient : AppCompatActivity() {
             jsonText.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
             jsonText.setTextColor(ContextCompat.getColor(this, R.color.black))
             jsonText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            jsonText.isVisible = false
+
+            //
+            innerLinearLayout_json.setOnClickListener{
+                if (isjsonClicked){
+                    jsonText.isVisible = false
+                    jsonmealdown.text = "⬇️"
+                }else{
+                    jsonText.isVisible = true
+                    jsonmealdown.text = "⬆️️"
+                }
+                isjsonClicked = !isjsonClicked
+            }
 
             //
             val imageView = ImageView(this).apply {
@@ -458,7 +497,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             mealName.gravity = Gravity.CENTER_HORIZONTAL
             mealName.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
             mealName.setTextColor(ContextCompat.getColor(this, R.color.black))
-            mealName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 32f)
+            mealName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28f)
 
             // creating text-view for meal category
             val mealCategory = TextView(this)
@@ -726,7 +765,10 @@ class Search_By_Ingredient : AppCompatActivity() {
             }
 
             // add views to inner LinearLayout
+            innerLinearLayout_json.addView(jsonmealName)
+            innerLinearLayout_json.addView(jsonmealCategory)
             innerLinearLayout_json.addView(jsonText)
+            innerLinearLayout_json.addView(jsonmealdown)
             innerLinearLayout.addView(imageView)
             innerLinearLayout.addView(mealName)
             innerLinearLayout.addView(mealCategory)
