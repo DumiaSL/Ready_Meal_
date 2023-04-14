@@ -31,10 +31,7 @@ import com.example.meal_preparation_application.classes.AppDatabase
 import com.example.meal_preparation_application.classes.MealDao
 import com.example.meal_preparation_application.classes.Meals
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -51,12 +48,17 @@ class Search_By_Ingredient : AppCompatActivity() {
     lateinit var linearLayout: LinearLayout
     lateinit var mealDao: MealDao
     var mydialog: Dialog? = null
-    lateinit var Controllist: ArrayList<Button>
+    lateinit var buttonControllist: ArrayList<Button>
+    lateinit var normalCardControl: ArrayList<LinearLayout>
+    lateinit var jsonCardControl: ArrayList<LinearLayout>
     lateinit var searchButton: Button
     lateinit var searchTextField: EditText
     lateinit var addDbMeals: Button
     lateinit var searchText: String
+    lateinit var resultCount: TextView
+    lateinit var jsonFormat: Switch
     var isCardPopUp = false
+    var isJsonFormat = false
     var issavedAlldatabase = false
     lateinit var selected_card_list: ArrayList<Int>
 
@@ -70,7 +72,9 @@ class Search_By_Ingredient : AppCompatActivity() {
 
         mydialog = Dialog(this)
         //
-        Controllist = ArrayList()
+        buttonControllist = ArrayList()
+        normalCardControl = ArrayList()
+        jsonCardControl = ArrayList()
         //
         selected_card_list = ArrayList()
 
@@ -78,6 +82,13 @@ class Search_By_Ingredient : AppCompatActivity() {
         searchTextField = findViewById<EditText>(R.id.search_bar)
         cardScroll = findViewById<LinearLayout>(R.id.scroll_layout)
         addDbMeals = findViewById<Button>(R.id.saveAllMeal_button)
+        resultCount = findViewById<TextView>(R.id.count_result)
+        jsonFormat = findViewById<Switch>(R.id.format_swich)
+
+        //
+        resultCount.isVisible = false
+        //hide add all meal button
+        addDbMeals.isEnabled = false
 
         //
         if (savedInstanceState != null) {
@@ -88,8 +99,21 @@ class Search_By_Ingredient : AppCompatActivity() {
                 savedInstanceState.getIntegerArrayList("selected_card_list") as ArrayList<Int>
         }
 
-        //hide add all meal button
-        addDbMeals.isEnabled = false
+        jsonFormat.setOnCheckedChangeListener { _, isChecked ->
+            isJsonFormat = isChecked
+            if (isJsonFormat){
+                for (index in 0 until allMeals.size){
+                    normalCardControl[index].isVisible = false
+                    jsonCardControl[index].isVisible = true
+                }
+            }else{
+                for (index in 0 until allMeals.size){
+                    normalCardControl[index].isVisible = true
+                    jsonCardControl[index].isVisible = false
+                }
+            }
+        }
+
 
         //when press add all meal button
         addDbMeals.setOnClickListener {
@@ -97,10 +121,10 @@ class Search_By_Ingredient : AppCompatActivity() {
                 runBlocking {
                     launch {
                         if (!selected_card_list.contains(index)) mealDao.insert(allMeals[index]);
-                        Controllist[index].isEnabled = false
-                        Controllist[index].setText("Already Added to DataBase")
-                        Controllist[index].backgroundTintList = ColorStateList.valueOf(Color.BLACK)
-                        Controllist[index].setTextColor(Color.WHITE)
+                        buttonControllist[index].isEnabled = false
+                        buttonControllist[index].setText("Already Added to DataBase")
+                        buttonControllist[index].backgroundTintList = ColorStateList.valueOf(Color.BLACK)
+                        buttonControllist[index].setTextColor(Color.WHITE)
                     }
                 }
             }
@@ -161,6 +185,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                     "https://www.themealdb.com/api/json/v1/1/filter.php?i=" + searchTextField.text.toString()
                 val url = URL(url_string)
                 val con: HttpURLConnection = url.openConnection() as HttpURLConnection
+
                 runBlocking {
                     launch {
                         // run the code of the coroutine in a new thread
@@ -174,6 +199,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                                 runOnUiThread {
                                     cardScroll.removeAllViews()
                                     addDbMeals.isEnabled = false
+                                    resultCount.isVisible = false
                                 }
                             }
 
@@ -183,6 +209,10 @@ class Search_By_Ingredient : AppCompatActivity() {
                                 runOnUiThread {
                                     addDbMeals.isEnabled = !issavedAlldatabase
 
+                                    //
+                                    resultCount.isVisible = true
+                                    resultCount.text =
+                                        "Total Results Found : " + allMeals.size.toString()
                                     //
                                     createMealCards()
                                 }
@@ -217,10 +247,14 @@ class Search_By_Ingredient : AppCompatActivity() {
                 textView.setTypeface(null, Typeface.BOLD)
                 textView.textSize = 16f
                 snackbar.show()
-            }catch (error : FileNotFoundException){
+            } catch (error: FileNotFoundException) {
                 //No site reached toast message
                 val snackbar =
-                    Snackbar.make(searchButton, "Sorry : Can't reached Server !!", Snackbar.LENGTH_LONG)
+                    Snackbar.make(
+                        searchButton,
+                        "Sorry : Can't reached Server !!",
+                        Snackbar.LENGTH_LONG
+                    )
                         .setAction("Action", null)
                 val snackbarView = snackbar.view
                 snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
@@ -255,9 +289,8 @@ class Search_By_Ingredient : AppCompatActivity() {
         }
     }
 
-
     //
-    private fun parseJSON(stbId: java.lang.StringBuilder): Boolean {
+    suspend fun parseJSON(stbId: java.lang.StringBuilder): Boolean {
         //reset All meal List
         allMeals = arrayListOf<Meals>();
 
@@ -289,14 +322,10 @@ class Search_By_Ingredient : AppCompatActivity() {
                     }
                 }
 
-
                 val json = JSONObject(stbMeal.toString())
                 val mealObject = json.getJSONArray("meals")
-//                println(mealObject)
 
                 val jsonMealId  = mealObject[0] as JSONObject // this is a json object
-                println(jsonMealId)
-                println(jsonMealId["strDrinkAlternate"])
                 val meal = Meals(
                     name = jsonMealId["strMeal"] as? String ?: null,
                     drinkAlternate = jsonMealId["strDrinkAlternate"] as? String ?: null,
@@ -333,7 +362,9 @@ class Search_By_Ingredient : AppCompatActivity() {
     private fun createMealCards() {
         isCardPopUp = true
         //
-        Controllist.clear()
+        buttonControllist.clear()
+        normalCardControl.clear()
+        jsonCardControl.clear()
         for (index in 0 until allMeals.size) {
 
             linearLayout = LinearLayout(this) // create a new LinearLayout
@@ -341,7 +372,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ) // set layout params
-            linearLayout.setPadding(20, 20, 20, 0)
+            linearLayout.setPadding(20, 10, 20, 0)
             linearLayout.gravity = Gravity.CENTER_HORIZONTAL
 
             linearLayout.orientation = LinearLayout.VERTICAL // set orientation
@@ -366,6 +397,24 @@ class Search_By_Ingredient : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT
             ) // set layout params
             innerLinearLayout.orientation = LinearLayout.VERTICAL // set orientation
+
+            //creating linearlayout for card-view
+            val innerLinearLayout_json = LinearLayout(this) // create an inner LinearLayout
+            innerLinearLayout_json.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            ) // set layout params
+            innerLinearLayout_json.orientation = LinearLayout.VERTICAL // set orientation
+
+            // creating text-view for meal area
+            val jsonText = TextView(this).apply {
+                setPadding(30,35,25,10)
+            }
+            jsonText.text = allMeals[index].toString()
+            jsonText.justificationMode = JUSTIFICATION_MODE_INTER_WORD
+            jsonText.typeface = ResourcesCompat.getFont(this, R.font.poppins_bold)
+            jsonText.setTextColor(ContextCompat.getColor(this, R.color.black))
+            jsonText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
 
             //
             val imageView = ImageView(this).apply {
@@ -486,7 +535,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                 textView.textSize = 16f
                 snackbar.show()
             }
-            Controllist.add(button)
+            buttonControllist.add(button)
 
             //when press the card_view. Its crate Dialog box
             innerLinearLayout.setOnClickListener {
@@ -677,6 +726,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             }
 
             // add views to inner LinearLayout
+            innerLinearLayout_json.addView(jsonText)
             innerLinearLayout.addView(imageView)
             innerLinearLayout.addView(mealName)
             innerLinearLayout.addView(mealCategory)
@@ -684,6 +734,16 @@ class Search_By_Ingredient : AppCompatActivity() {
             inner1LinearLayout.addView(button)
             innerLinearLayout.addView(inner1LinearLayout)
 
+            if (isJsonFormat){
+                innerLinearLayout_json.isVisible = true
+                innerLinearLayout.isVisible = false
+            }else{
+                innerLinearLayout.isVisible = true
+                innerLinearLayout_json.isVisible = false
+            }
+            normalCardControl.add(innerLinearLayout)
+            jsonCardControl.add(innerLinearLayout_json)
+            cardView.addView(innerLinearLayout_json)
             cardView.addView(innerLinearLayout) // add inner LinearLayout to cardView
             linearLayout.addView(cardView) // add cardView to outer LinearLayout
             cardScroll.addView(linearLayout) // add outer LinearLayout to your layout

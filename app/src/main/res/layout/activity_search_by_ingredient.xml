@@ -33,8 +33,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#FFD200"
         android:background="@drawable/liner_layout"
+        android:backgroundTint="#FFD200"
         android:elevation="20dp"
         android:orientation="vertical"
         android:paddingHorizontal="20dp">
@@ -56,12 +56,21 @@
             android:paddingStart="35dp"
             android:textAlignment="center" />
 
+        <Switch
+            android:id="@+id/format_swich"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="110dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="Json Format"
+            android:textStyle="bold" />
+
         <Button
             android:id="@+id/search_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="6dp"
             android:layout_marginRight="30dp"
             android:layout_marginBottom="1dp"
             android:fontFamily="@font/poppins_bold"
@@ -77,12 +86,23 @@
             android:layout_marginLeft="30dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="30dp"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="8dp"
             android:fontFamily="@font/poppins_bold"
             android:paddingVertical="10dp"
             android:text=" Save All meals to Database"
             android:textStyle="bold"
             app:cornerRadius="20dp" />
+
+        <TextView
+            android:id="@+id/count_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="Total Results Found : "
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <ScrollView

@@ -44,11 +44,11 @@ class MainActivity : AppCompatActivity() {
         addMealsDb.setOnClickListener {
             runBlocking {
                 launch {
-                    //
-//                    mealDao.insert(mealSweetAndSourPork);
-//                    mealDao.insert(mealChickenMarengo)
-//                    mealDao.insert(mealBeefBanhMi)
-//                    mealDao.insert(mealLeblebiSoup)
+
+                    mealDao.insert(mealSweetAndSourPork);
+                    mealDao.insert(mealChickenMarengo)
+                    mealDao.insert(mealBeefBanhMi)
+                    mealDao.insert(mealLeblebiSoup)
 
                     val meals: List<Meals> = mealDao.getAll()
                     for (meal_ in meals) {
