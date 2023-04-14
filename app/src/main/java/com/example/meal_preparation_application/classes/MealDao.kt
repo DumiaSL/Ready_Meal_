@@ -15,15 +15,6 @@ import androidx.room.Query
     @Query("DELETE FROM meals")
     suspend fun deleteAll()
 
-//    @Query("SELECT * FROM meals")
-//    fun getAll(): List<Meal>
-//
-//    @Insert
-//    fun insert(meal: Meal)
-//
-//    @Update
-//    fun update(meal: Meal)
-//
-//    @Delete
-//    fun delete(meal: Meal)
+   @Query("SELECT id,name FROM meals")
+   suspend fun getIdName(): List<Meals>
 }

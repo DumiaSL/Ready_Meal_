@@ -18,6 +18,8 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.meal_preparation_application.R
 
+//source - https://www.geeksforgeeks.org/android-gridview-in-kotlin/
+
 // on below line we are creating an
 // adapter class for our grid view.
 internal class GridRVAdeptor(
@@ -73,20 +75,21 @@ internal class GridRVAdeptor(
         // on below line we are setting image for our course image view.
 
         // on below line we are setting text in our course text view.
-        minicard_name.setText(courseList[position].meal_name)
-        minicard_category.setText(courseList[position].meal_category)
+        minicard_name.setText(courseList[position].meal.name)
+        minicard_category.setText(courseList[position].meal.category)
         var bitmapDrawable: BitmapDrawable? = null
-        println(courseList[position].meal_thumbnail)
         Glide.with(convertView)
             .asBitmap()
-            .load(courseList[position].meal_thumbnail)
+            .load(courseList[position].meal.mealThumb)
             .into(object : CustomTarget<Bitmap>() {
                 override fun onResourceReady(
                     resource: Bitmap,
                     transition: Transition<in Bitmap>?
                 ) {
                     val drawable = BitmapDrawable(context.resources, resource)
-                    drawable.alpha = 150
+                    // Create a new BitmapDrawable with the copied bitmap
+                    courseList[position].bitmapDrawable =  BitmapDrawable(context.resources, drawable.bitmap.copy(Bitmap.Config.ARGB_8888, true))
+                    drawable.alpha = 140
                     minicard_image.background = drawable
                 }
 
@@ -97,7 +100,6 @@ internal class GridRVAdeptor(
                     // clear it here as you can no longer have the bitmap
                 }
             })
-//        minicard_image.background =  courseList[position].meal_thumbnail
         // at last we are returning our convert view.
         return convertView
     }

@@ -12,7 +12,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="144dp"
+        android:layout_height="148dp"
         android:id="@+id/idIVCourse"
         android:orientation="vertical">
 
@@ -24,11 +24,11 @@
             <TextView
                 android:id="@+id/meal_name"
                 android:layout_width="match_parent"
-                android:layout_height="105dp"
+                android:layout_height="109dp"
                 android:layout_gravity="center"
                 android:layout_margin="4dp"
                 android:padding="4dp"
-                android:fontFamily="@font/poppins_bold"
+                android:fontFamily="@font/poppins_extrabold"
                 android:textSize="17.5sp"
                 android:textStyle="bold"
                 android:textAlignment="center"

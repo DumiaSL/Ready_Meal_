@@ -572,7 +572,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                 }
 
                 //
-                for (index in 0 until filteredList_ing.size) {
+                for (index in 0 until Integer.min(filteredList_ing.size, filteredList_me.size)) {
                     val temp_ing = TextView(this)
                     temp_ing.id = View.generateViewId()
                     temp_ing.layoutParams = LinearLayout.LayoutParams(
