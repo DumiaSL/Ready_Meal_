@@ -150,7 +150,6 @@ class Search_By_Ingredient : AppCompatActivity() {
         //keyboard hide
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(searchTextField.windowToken, 0)
-//        issavedAlldatabase=false
 
         if (searchTextField.text.isNotEmpty()) {
             //
@@ -159,7 +158,7 @@ class Search_By_Ingredient : AppCompatActivity() {
                 val stb = StringBuilder()
                 //
                 val url_string =
-                    "https://www.themealdb.com/api/json/v1/1/search.php?s=" + searchTextField.text.toString()
+                    "https://www.themealdb.com/api/json/v1/1/filter.php?i=" + searchTextField.text.toString()
                 val url = URL(url_string)
                 val con: HttpURLConnection = url.openConnection() as HttpURLConnection
                 runBlocking {
@@ -254,6 +253,80 @@ class Search_By_Ingredient : AppCompatActivity() {
             textView.textSize = 16f
             snackbar.show()
         }
+    }
+
+
+    //
+    private fun parseJSON(stbId: java.lang.StringBuilder): Boolean {
+        //reset All meal List
+        allMeals = arrayListOf<Meals>();
+
+        // this contains the full JSON returned by the Web Service
+        val json = JSONObject(stbId.toString())
+        // Information about all the Meals extracted by this function
+        if (json.isNull("meals")) {
+            return false
+        } else {
+            val jsonArray: JSONArray = json.getJSONArray("meals")
+            // extract all the books from the JSON array
+            for (i in 0 until jsonArray.length()) {
+                val jsonMealList: JSONObject = jsonArray[i] as JSONObject // this is a json object
+
+                val stbMeal = StringBuilder()
+                //
+                val url_string =
+                    "https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + jsonMealList["idMeal"]
+                val url = URL(url_string)
+                val con: HttpURLConnection = url.openConnection() as HttpURLConnection
+                runBlocking {
+                    launch {
+                        // run the code of the coroutine in a new thread
+                        withContext(Dispatchers.IO) {
+                            val bf = BufferedReader(InputStreamReader(con.inputStream))
+                            val line: String? = bf.readLine()
+                            stbMeal.append(line)
+                        }
+                    }
+                }
+
+
+                val json = JSONObject(stbMeal.toString())
+                val mealObject = json.getJSONArray("meals")
+//                println(mealObject)
+
+                val jsonMealId  = mealObject[0] as JSONObject // this is a json object
+                println(jsonMealId)
+                println(jsonMealId["strDrinkAlternate"])
+                val meal = Meals(
+                    name = jsonMealId["strMeal"] as? String ?: null,
+                    drinkAlternate = jsonMealId["strDrinkAlternate"] as? String ?: null,
+                    category = jsonMealId["strCategory"] as? String ?: null,
+                    area = jsonMealId["strArea"] as? String ?: null,
+                    instructions = jsonMealId["strInstructions"] as? String ?: null,
+                    mealThumb = jsonMealId["strMealThumb"] as? String ?: null,
+                    ingredients = getList(jsonMealId, "strIngredient"),
+                    measure = getList(jsonMealId, "strMeasure"),
+                    tags = jsonMealId["strTags"] as? String ?: null,
+                    youtube = jsonMealId["strYoutube"] as? String ?: null,
+                    source = jsonMealId["strSource"] as? String ?: null,
+                    imageSource = jsonMealId["strImageSource"] as? String ?: null,
+                    creativeCommonsConfirmed = jsonMealId["strCreativeCommonsConfirmed"] as? String ?: null,
+                    dateModified = jsonMealId["dateModified"] as? String ?: null,
+                )
+                allMeals.add(meal)
+            }
+        }
+        return true
+    }
+
+    //
+    private fun getList(jsonMealList: JSONObject, typeName: String): ArrayList<String> {
+        val temp = ArrayList<String>()
+        for (i in 1..20) {
+            val type = jsonMealList[typeName + i.toString()] as? String ?: null
+            temp.add(type.toString())
+        }
+        return temp;
     }
 
     //Creating meal card on ui
@@ -615,55 +688,6 @@ class Search_By_Ingredient : AppCompatActivity() {
             linearLayout.addView(cardView) // add cardView to outer LinearLayout
             cardScroll.addView(linearLayout) // add outer LinearLayout to your layout
         }
-    }
-
-    //
-    private fun getList(jsonMealList: JSONObject, typeName: String): ArrayList<String> {
-        val temp = ArrayList<String>()
-        for (i in 1..20) {
-            val type = jsonMealList[typeName + i.toString()] as? String ?: null
-            temp.add(type.toString())
-        }
-        return temp;
-    }
-
-    //
-    private fun parseJSON(stb: java.lang.StringBuilder): Boolean {
-        //reset All meal List
-        allMeals = arrayListOf<Meals>();
-
-        // this contains the full JSON returned by the Web Service
-        val json = JSONObject(stb.toString())
-        // Information about all the Meals extracted by this function
-        if (json.isNull("meals")) {
-            return false
-        } else {
-            val jsonArray: JSONArray = json.getJSONArray("meals")
-            // extract all the books from the JSON array
-            for (i in 0 until jsonArray.length()) {
-                val jsonMealList: JSONObject = jsonArray[i] as JSONObject // this is a json object
-
-                val meal = Meals(
-                    name = jsonMealList["strMeal"] as? String ?: null,
-                    drinkAlternate = jsonMealList["strDrinkAlternate"] as? String ?: null,
-                    category = jsonMealList["strCategory"] as? String ?: null,
-                    area = jsonMealList["strArea"] as? String ?: null,
-                    instructions = jsonMealList["strInstructions"] as? String ?: null,
-                    mealThumb = jsonMealList["strMealThumb"] as? String ?: null,
-                    ingredients = getList(jsonMealList, "strIngredient"),
-                    measure = getList(jsonMealList, "strMeasure"),
-                    tags = jsonMealList["strTags"] as? String ?: null,
-                    youtube = jsonMealList["strYoutube"] as? String ?: null,
-                    source = jsonMealList["strSource"] as? String ?: null,
-                    imageSource = jsonMealList["strImageSource"] as? String ?: null,
-                    creativeCommonsConfirmed = jsonMealList["strCreativeCommonsConfirmed"] as? String
-                        ?: null,
-                    dateModified = jsonMealList["dateModified"] as? String ?: null,
-                )
-                allMeals.add(meal)
-            }
-        }
-        return true
     }
 
     //
