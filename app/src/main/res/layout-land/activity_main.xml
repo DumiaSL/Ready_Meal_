@@ -7,11 +7,31 @@
     android:background="@drawable/mainwallpaper_lands"
     tools:context=".MainActivity">
 
+    <EditText
+        android:id="@+id/search_bar2"
+        android:layout_width="337dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="7dp"
+        android:autofillHints=""
+        android:background="@drawable/textfield_style"
+        android:backgroundTint="#F8F0A6"
+        android:drawableEnd="@android:drawable/ic_menu_search"
+        android:elevation="25dp"
+        android:fontFamily="@font/poppins_medium"
+        android:hint="Search Here Meal"
+        android:inputType="textPersonName"
+        android:paddingStart="35dp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/add_button"
         android:layout_width="278dp"
         android:layout_height="58dp"
-        android:layout_marginTop="71dp"
+        android:layout_marginTop="15dp"
         android:backgroundTint="#FFD200"
         android:fontFamily="@font/poppins_bold"
         android:text="@string/add_meals_to_db"
@@ -19,9 +39,9 @@
         android:textSize="19sp"
         app:cornerRadius="15dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/search_bar2" />
 
     <Button
         android:id="@+id/search_by_ing_button"
@@ -55,18 +75,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_by_ing_button" />
 
-<!--    <TextView-->
-<!--        android:id="@+id/textView"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginBottom="23dp"-->
-<!--        android:fontFamily="@font/poppins_bold"-->
-<!--        android:text="@string/about_me"-->
-<!--        android:textColor="#131313"-->
-<!--        android:textSize="14sp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.5"-->
-<!--        app:layout_constraintStart_toStartOf="parent" />-->
+    <!--    <TextView-->
+    <!--        android:id="@+id/textView"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginBottom="23dp"-->
+    <!--        android:fontFamily="@font/poppins_bold"-->
+    <!--        android:text="@string/about_me"-->
+    <!--        android:textColor="#131313"-->
+    <!--        android:textSize="14sp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintHorizontal_bias="0.5"-->
+    <!--        app:layout_constraintStart_toStartOf="parent" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

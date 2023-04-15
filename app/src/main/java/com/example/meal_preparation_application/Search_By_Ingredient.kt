@@ -40,6 +40,7 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.UnknownHostException
+import java.io.Serializable
 
 
 class Search_By_Ingredient : AppCompatActivity() {
@@ -798,6 +799,7 @@ class Search_By_Ingredient : AppCompatActivity() {
         outState.putBoolean("isCardPopUp", isCardPopUp)
         outState.putBoolean("issavedAlldatabase", issavedAlldatabase)
         outState.putIntegerArrayList("selected_card_list", ArrayList(selected_card_list))
+        outState.putSerializable("allMeals", allMeals)
     }
 
     //
@@ -806,8 +808,15 @@ class Search_By_Ingredient : AppCompatActivity() {
         searchText = savedInstanceState.getString("searchText").toString()
         isCardPopUp = savedInstanceState.getBoolean("isCardPopUp")
         issavedAlldatabase = savedInstanceState.getBoolean("issavedAlldatabase")
+        allMeals = savedInstanceState.getSerializable("allMeals") as ArrayList<Meals>
         selected_card_list =
             savedInstanceState.getIntegerArrayList("selected_card_list") as ArrayList<Int>
+
+        if (allMeals.size!=0){
+            resultCount.isVisible = true
+            resultCount.text =
+                "Total Results Found : " + allMeals.size.toString()
+        }
 
         whenRotateSet()
     }
@@ -816,7 +825,7 @@ class Search_By_Ingredient : AppCompatActivity() {
     private fun whenRotateSet() {
         searchTextField.setText(searchText)
 
-        if (isCardPopUp) search_fun()
+        if (isCardPopUp) createMealCards()
     }
 
     //

@@ -3,6 +3,7 @@ package com.example.meal_preparation_application.classes
 import androidx.room.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.Serializable
 
 @Entity(tableName = "meals")
 data class Meals(
@@ -24,7 +25,7 @@ data class Meals(
     @ColumnInfo(name = "imageSource") var imageSource: String? = null,
     @ColumnInfo(name = "creativeCommonsConfirmed") var creativeCommonsConfirmed: String? = null,
     @ColumnInfo(name = "dateModified") var dateModified: String? = null
-){
+): Serializable {
     override fun toString(): String {
         var output =
             "\"Meal\" : \"$name\",\n"+

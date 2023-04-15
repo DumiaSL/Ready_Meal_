@@ -5,7 +5,10 @@ import android.graphics.Color
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.room.Room
 import com.example.meal_preparation_application.classes.AppDatabase
@@ -17,6 +20,7 @@ import kotlinx.coroutines.runBlocking
 
 
 class MainActivity : AppCompatActivity() {
+    lateinit var searchBar:EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         val addMealsDb = findViewById<Button>(R.id.add_button)
         val SB_igredient=findViewById<Button>(R.id.search_by_ing_button)
         var SB_meal = findViewById<Button>(R.id.search_by_meal_button)
+        searchBar = findViewById<EditText>(R.id.search_bar)
 
         SB_igredient.setOnClickListener{
             val intent = Intent(this, Search_By_Ingredient::class.java)
@@ -40,6 +45,22 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, Search_for_Meal::class.java)
             startActivity(intent)
         }
+
+        searchBar.addTextChangedListener(object : TextWatcher {
+
+            override fun afterTextChanged(s: Editable) {}
+
+            override fun beforeTextChanged(s: CharSequence, start: Int,
+                                           count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(change: CharSequence, start: Int,
+                                       before: Int, count: Int) {
+                if (change.length==1){
+                    changePage()
+                }
+            }
+        })
 
         addMealsDb.setOnClickListener {
             runBlocking {
@@ -69,5 +90,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun changePage() {
+        val intent = Intent(this, Meal_Search::class.java)
+        intent.putExtra("search_word",searchBar.text.toString())
+        searchBar.text.clear()
+        startActivity(intent)
     }
 }

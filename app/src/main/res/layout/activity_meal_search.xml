@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".Search_for_Meal">
-
-    <TextView
-        android:id="@+id/backButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:fontFamily="@font/poppins_bold"
-        android:text="Offline Meal Search"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="32sp"
-        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,20 +16,33 @@
         android:orientation="vertical"
         android:paddingHorizontal="20dp">
 
+        <TextView
+            android:id="@+id/backButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="⬅️"
+            android:textAlignment="viewStart"
+            android:textColor="@color/black"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+
         <EditText
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="8dp"
             android:autofillHints=""
             android:background="@drawable/textfield_style"
             android:backgroundTint="#F8F0A6"
+            android:defaultFocusHighlightEnabled="true"
             android:drawableEnd="@android:drawable/ic_menu_search"
             android:elevation="25dp"
+            android:focusable="auto"
             android:fontFamily="@font/poppins_medium"
             android:foregroundGravity="center_vertical"
-            android:hint="@string/search_here_meal_or_ingredient_nname"
             android:inputType="textPersonName"
             android:paddingStart="35dp"
             android:textAlignment="center" />
@@ -53,7 +55,8 @@
             android:text="Total Results Found : "
             android:textAlignment="center"
             android:textColor="@color/black"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="invisible" />
 
     </LinearLayout>
 
@@ -68,5 +71,6 @@
         android:verticalSpacing="10dp">
 
     </GridView>
+
 
 </LinearLayout>
