@@ -49,7 +49,7 @@
                 android:id="@+id/search_bar"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="5dp"
                 android:autofillHints=""
                 android:background="@drawable/textfield_style"
@@ -62,12 +62,22 @@
                 android:paddingLeft="32dp"
                 android:textAlignment="center" />
 
+            <Switch
+                android:id="@+id/format_swich"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="110dp"
+                android:fontFamily="@font/poppins_bold"
+                android:text="Json Format"
+                android:textStyle="bold"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+
             <Button
                 android:id="@+id/search_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginRight="30dp"
                 android:layout_marginBottom="1dp"
                 android:fontFamily="@font/poppins_bold"

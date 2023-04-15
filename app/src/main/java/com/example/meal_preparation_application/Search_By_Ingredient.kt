@@ -431,7 +431,6 @@ class Search_By_Ingredient : AppCompatActivity() {
             jsonmealdown.setTextColor(ContextCompat.getColor(this, R.color.black))
             jsonmealdown.setTextSize(TypedValue.COMPLEX_UNIT_SP, 23f)
 
-
             // creating text-view for meal area
             val jsonText = TextView(this).apply {
                 setPadding(30,35,25,10)

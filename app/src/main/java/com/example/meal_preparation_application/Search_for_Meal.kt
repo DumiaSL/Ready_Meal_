@@ -29,6 +29,7 @@ class Search_for_Meal : AppCompatActivity() {
     // variables for grid view and course list
     lateinit var courseGRV: GridView
     lateinit var searchbarTextField : EditText
+    lateinit var resultCount : TextView
     lateinit var courseList: List<GridViewModal>
     var mydialog: Dialog? = null
     lateinit var selectedMeals: MutableList<Meals>
@@ -42,6 +43,7 @@ class Search_for_Meal : AppCompatActivity() {
         selectedMeals = mutableListOf()
         courseGRV = findViewById(R.id.grid_view_layout)
         searchbarTextField = findViewById<EditText>(R.id.search_bar)
+        resultCount = findViewById<TextView>(R.id.count_result)
 
         mydialog = Dialog(this)
 
@@ -58,6 +60,8 @@ class Search_for_Meal : AppCompatActivity() {
                 allMeals = mealDao.getAll()
             }
         }
+
+        resultCount.isVisible = false
 
         //
         searchbarTextField.addTextChangedListener(object : TextWatcher {
@@ -100,6 +104,9 @@ class Search_for_Meal : AppCompatActivity() {
                     selectedMeals =
                         (mealsBasedOnIngredient + mealsBasedOnName).distinct().toMutableList()
                 }
+                resultCount.isVisible = true
+                resultCount.text =
+                    "Total Results Found : " + selectedMeals.size.toString()
                 //
                 createMiniCards()
             }
@@ -109,6 +116,7 @@ class Search_for_Meal : AppCompatActivity() {
     private fun createMiniCards() {
         //
         if (searchbarTextField.text.isEmpty()){
+            resultCount.isVisible = false
             this.selectedMeals.clear()
         }
         // on below line we are adding data to

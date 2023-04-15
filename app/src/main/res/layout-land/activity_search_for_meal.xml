@@ -10,16 +10,17 @@
         android:id="@+id/heading_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="TextView"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/poppins_bold"
+        android:text="Offline Meal Search"
         android:textAlignment="center"
-        android:textSize="34sp"
+        android:textColor="@color/black"
+        android:textSize="32sp"
         android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:background="@drawable/liner_layout"
         android:backgroundTint="#FFD200"
         android:elevation="30dp"
