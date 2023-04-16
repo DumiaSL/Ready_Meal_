@@ -47,6 +47,20 @@
             android:paddingStart="35dp"
             android:textAlignment="center" />
 
+        <Button
+            android:id="@+id/search_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="1dp"
+            android:fontFamily="@font/poppins_bold"
+            android:paddingVertical="10dp"
+            android:text="@string/searchButton"
+            android:textStyle="bold"
+            app:cornerRadius="20dp" />
+
         <TextView
             android:id="@+id/count_result"
             android:layout_width="match_parent"
