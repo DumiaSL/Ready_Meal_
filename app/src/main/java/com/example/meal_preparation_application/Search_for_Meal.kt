@@ -1,7 +1,10 @@
 package com.example.meal_preparation_application
 
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.text.LineBreaker
 import android.net.Uri
@@ -10,7 +13,9 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.TypedValue
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -20,6 +25,7 @@ import com.example.meal_preparation_application.classes.AppDatabase
 import com.example.meal_preparation_application.classes.Meals
 import com.example.meal_preparation_application.utils.GridRVAdeptor
 import com.example.meal_preparation_application.utils.GridViewModal
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.lang.Integer.min
@@ -30,6 +36,7 @@ class Search_for_Meal : AppCompatActivity() {
     lateinit var courseGRV: GridView
     lateinit var searchbarTextField : EditText
     lateinit var resultCount : TextView
+    lateinit var search_button : Button
     lateinit var courseList: List<GridViewModal>
     var mydialog: Dialog? = null
     lateinit var selectedMeals: MutableList<Meals>
@@ -44,6 +51,8 @@ class Search_for_Meal : AppCompatActivity() {
         courseGRV = findViewById(R.id.grid_view_layout)
         searchbarTextField = findViewById<EditText>(R.id.search_bar)
         resultCount = findViewById<TextView>(R.id.count_result)
+        search_button = findViewById(R.id.search_button)
+
 
         mydialog = Dialog(this)
 
@@ -63,57 +72,78 @@ class Search_for_Meal : AppCompatActivity() {
 
         resultCount.isVisible = false
 
-        //
-        searchbarTextField.addTextChangedListener(object : TextWatcher {
+        //when press search keyboard enter button
+        searchbarTextField.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                //keyboard hide
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(searchbarTextField.windowToken, 0)
+                whenPressButton()
 
-            override fun afterTextChanged(s: Editable) {}
-
-            override fun beforeTextChanged(
-                s: CharSequence, start: Int,
-                count: Int, after: Int
-            ) {
+                return@OnKeyListener true
             }
-
-            override fun onTextChanged(
-                onChangeWord: CharSequence, start: Int,
-                before: Int, count: Int
-            )
-            {
-                //reset lists
-                val mealsBasedOnName = ArrayList<Meals>()
-                val mealsBasedOnIngredient = ArrayList<Meals>()
-                courseList = ArrayList<GridViewModal>()
-                selectedMeals.clear()
-
-                //
-                for (meal in allMeals) {
-                    //
-                    if (meal.name?.contains(
-                            onChangeWord,
-                            ignoreCase = true
-                        ) == true
-                    ) mealsBasedOnName.add(meal)
-
-                    //
-                    for (ingredient in meal.ingredients!!) {
-                        if (ingredient.contains(onChangeWord, ignoreCase = true)) {
-                            mealsBasedOnIngredient.add(meal)
-                            break
-                        }
-                    }
-                    selectedMeals =
-                        (mealsBasedOnIngredient + mealsBasedOnName).distinct().toMutableList()
-                }
-                resultCount.isVisible = true
-                resultCount.text =
-                    "Total Results Found : " + selectedMeals.size.toString()
-                //
-                createMiniCards()
-            }
+            false
         })
+
+        //
+        search_button.setOnClickListener {
+            //keyboard hide
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(searchbarTextField.windowToken, 0)
+            whenPressButton()
+        }
+    }
+
+    private fun whenPressButton() {
+        val onChangeWord = searchbarTextField.text.toString()
+        //reset lists
+        val mealsBasedOnName = ArrayList<Meals>()
+        val mealsBasedOnIngredient = ArrayList<Meals>()
+        selectedMeals.clear()
+
+        if (onChangeWord.isNotEmpty()){
+            //
+            for (meal in allMeals) {
+                //
+                if (meal.name?.contains(
+                        onChangeWord,
+                        ignoreCase = true
+                    ) == true
+                ) mealsBasedOnName.add(meal)
+
+                //
+                for (ingredient in meal.ingredients!!) {
+                    if (ingredient.contains(onChangeWord, ignoreCase = true)) {
+                        mealsBasedOnIngredient.add(meal)
+                        break
+                    }
+                }
+                selectedMeals =
+                    (mealsBasedOnIngredient + mealsBasedOnName).distinct().toMutableList()
+            }
+            //
+            createMiniCards()
+        }else{
+            //Toast Message
+            val snackbar =
+                Snackbar.make(search_button, "Please Enter Meal Or Ingredient !!", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null)
+            val snackbarView = snackbar.view
+            snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
+            val textView =
+                snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+            textView.setTextColor(Color.BLACK)
+            textView.setTypeface(null, Typeface.BOLD)
+            textView.textSize = 16f
+            snackbar.show()
+        }
     }
 
     private fun createMiniCards() {
+        courseList = ArrayList<GridViewModal>()
+        resultCount.isVisible = true
+        resultCount.text =
+            "Total Results Found : " + selectedMeals.size.toString()
         //
         if (searchbarTextField.text.isEmpty()){
             resultCount.isVisible = false
@@ -283,5 +313,18 @@ class Search_for_Meal : AppCompatActivity() {
                 mydialog!!.show()
 
             }
+    }
+
+    //
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putSerializable("selectedMeals", selectedMeals as ArrayList)
+    }
+
+    //
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        selectedMeals = savedInstanceState.getSerializable("selectedMeals") as MutableList<Meals>
+        if (selectedMeals.size!=0)createMiniCards()
     }
 }

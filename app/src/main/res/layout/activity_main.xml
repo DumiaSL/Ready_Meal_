@@ -31,7 +31,7 @@
         android:id="@+id/add_button"
         android:layout_width="288dp"
         android:layout_height="63dp"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="28dp"
         android:backgroundTint="#FFD200"
         android:fontFamily="@font/poppins_bold"
         android:text="@string/add_meals_to_db"

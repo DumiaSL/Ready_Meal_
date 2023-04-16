@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <EditText
-        android:id="@+id/search_bar2"
+        android:id="@+id/search_bar"
         android:layout_width="337dp"
         android:layout_height="49dp"
         android:layout_marginTop="7dp"
@@ -41,7 +41,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_bar2" />
+        app:layout_constraintTop_toBottomOf="@+id/search_bar" />
 
     <Button
         android:id="@+id/search_by_ing_button"
