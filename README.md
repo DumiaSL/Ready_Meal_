@@ -21,8 +21,3 @@ To run the app, you'll need to have Android Studio and the necessary dependencie
 
 Contributing:
 Contributions to the project are welcome! As this is a recently started project, there is plenty of scope for new ideas and improvements.
-
-
-![WhatsApp Image 2023-03-30 at 11 18 00](https://user-images.githubusercontent.com/90560618/228741870-e0c5f70e-52b7-46f1-8746-b5133c0bee51.jpg)
-
-![d](https://user-images.githubusercontent.com/90560618/228741746-4865d451-6183-448b-80bf-8a465a3be79b.jpg)
