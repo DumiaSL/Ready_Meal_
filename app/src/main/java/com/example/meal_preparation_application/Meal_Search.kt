@@ -71,8 +71,14 @@ class Meal_Search : AppCompatActivity() {
         //
         selected_card_list = ArrayList()
 
+        //
+        if (savedInstanceState != null) {
+            allMeals = savedInstanceState.getSerializable("allMeals") as ArrayList<Meals>
+        }
+
         //ini
         searchBar.setText(search_word)
+        resultCount.isVisible = false
 
         //Back button
         backIcon.setOnClickListener {
@@ -83,7 +89,6 @@ class Meal_Search : AppCompatActivity() {
         searchBar.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 //
-
                 search_fun()
 
                 return@OnKeyListener true
@@ -128,9 +133,10 @@ class Meal_Search : AppCompatActivity() {
                             //checking is melas have
                             if (parseJSON(stb)) {
                                 //
-                                println(allMeals)
                                 runOnUiThread{
                                     createMiniCards()
+                                    resultCount.isVisible = true
+                                    resultCount.text= "Total Results Found : " + allMeals.size.toString()
                                 }
 
                             } else {
@@ -179,6 +185,9 @@ class Meal_Search : AppCompatActivity() {
         } else {
             allMeals.clear()
             createMiniCards()
+            resultCount.isVisible = false
+
+
             //Toast Message
             val snackbar =
                 Snackbar.make(SearchButton, "Please Enter Ingredient !!", Snackbar.LENGTH_LONG)
@@ -196,9 +205,6 @@ class Meal_Search : AppCompatActivity() {
 
     private fun createMiniCards() {
         courseList = ArrayList<GridViewModal>()
-//        resultCount.isVisible = true
-//        resultCount.text = "Total Results Found : " + allMeals.size.toString()
-        //
         // on below line we are adding data to
         // our course list with image and course name.
         for (savedMeal in this.allMeals) {
@@ -281,8 +287,7 @@ class Meal_Search : AppCompatActivity() {
             }
 
             if (courseList[position].meal.creativeCommonsConfirmed != null) {
-                extraMealCreative.text =
-                    "Creative Commons Confirmed : " + courseList[position].meal.creativeCommonsConfirmed
+                extraMealCreative.text = "Creative Commons Confirmed : " + courseList[position].meal.creativeCommonsConfirmed
             } else {
                 extraMealCreative.isVisible = false
             }
@@ -440,9 +445,42 @@ class Meal_Search : AppCompatActivity() {
     private fun getList(jsonMealList: JSONObject, typeName: String): ArrayList<String> {
         val temp = ArrayList<String>()
         for (i in 1..20) {
-            val type = jsonMealList[typeName + i.toString()] as? String ?: null
+            val type = jsonMealList[typeName + i.toString()] as? String
             temp.add(type.toString())
         }
         return temp;
+    }
+
+    //
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putSerializable("allMeals", allMeals)
+        outState.putSerializable("selected_card_list", selected_card_list)
+    }
+
+    //
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        allMeals = savedInstanceState.getSerializable("allMeals") as ArrayList<Meals>
+        selected_card_list = savedInstanceState.getSerializable("selected_card_list") as ArrayList<Meals>
+
+        whenRotateSet()
+    }
+
+    //
+    private fun whenRotateSet() {
+        if (allMeals.size!=0){
+            resultCount.isVisible = true
+            resultCount.text= "Total Results Found : " + allMeals.size.toString()
+            createMiniCards()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (mydialog != null && mydialog!!.isShowing()) {
+            mydialog!!.dismiss()
+        }
     }
 }

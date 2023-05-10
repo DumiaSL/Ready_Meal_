@@ -142,8 +142,7 @@ class Search_for_Meal : AppCompatActivity() {
     private fun createMiniCards() {
         courseList = ArrayList<GridViewModal>()
         resultCount.isVisible = true
-        resultCount.text =
-            "Total Results Found : " + selectedMeals.size.toString()
+        resultCount.text = "Total Results Found : " + selectedMeals.size.toString()
         //
         if (searchbarTextField.text.isEmpty()){
             resultCount.isVisible = false
