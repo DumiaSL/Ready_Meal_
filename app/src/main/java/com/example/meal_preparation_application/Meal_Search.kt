@@ -49,6 +49,8 @@ class Meal_Search : AppCompatActivity() {
     lateinit var resultCount: TextView
     var bitmapDrawable: BitmapDrawable? = null
     lateinit var mealDao: MealDao
+    lateinit var selected_card_list: ArrayList<Meals>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meal_search)
@@ -65,6 +67,9 @@ class Meal_Search : AppCompatActivity() {
         SearchButton = findViewById(R.id.search_button)
         resultCount = findViewById(R.id.count_result)
         courseGRV = findViewById(R.id.grid_view_layout)
+
+        //
+        selected_card_list = ArrayList()
 
         //ini
         searchBar.setText(search_word)
@@ -99,7 +104,10 @@ class Meal_Search : AppCompatActivity() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(searchBar.windowToken, 0)
 
+
         if (searchBar.text.isNotEmpty()) {
+            //
+            selected_card_list.clear()
             //
             try {
                 // collecting all the JSON string
@@ -169,6 +177,8 @@ class Meal_Search : AppCompatActivity() {
                 snackbar.show()
             }
         } else {
+            allMeals.clear()
+            createMiniCards()
             //Toast Message
             val snackbar =
                 Snackbar.make(SearchButton, "Please Enter Ingredient !!", Snackbar.LENGTH_LONG)
@@ -296,8 +306,15 @@ class Meal_Search : AppCompatActivity() {
                 extraMealdrink.text = "- -"
             }
 
+            if (selected_card_list?.contains(courseList[position].meal) == true) {
+                extraMealSaveButton.isEnabled = false
+                extraMealSaveButton.setText("Already Added to DataBase")
+                extraMealSaveButton.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
+                extraMealSaveButton.setTextColor(Color.WHITE)
+            }
+
             extraMealSaveButton.setOnClickListener {
-//                selected_card_list?.add(index)
+                selected_card_list?.add(courseList[position].meal)
                 //
                 runBlocking {
                     launch {
@@ -377,7 +394,6 @@ class Meal_Search : AppCompatActivity() {
                 extraMealInglayout.addView(temp_ing)
             }
             mydialog!!.show()
-
         }
     }
 

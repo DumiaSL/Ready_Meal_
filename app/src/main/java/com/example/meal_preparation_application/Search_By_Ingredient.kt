@@ -96,8 +96,7 @@ class Search_By_Ingredient : AppCompatActivity() {
             searchText = savedInstanceState.getString("searchText").toString()
             isCardPopUp = savedInstanceState.getBoolean("isCardPopUp")
             issavedAlldatabase = savedInstanceState.getBoolean("issavedAlldatabase")
-            selected_card_list =
-                savedInstanceState.getIntegerArrayList("selected_card_list") as ArrayList<Int>
+            selected_card_list = savedInstanceState.getIntegerArrayList("selected_card_list") as ArrayList<Int>
         }
 
         jsonFormat.setOnCheckedChangeListener { _, isChecked ->
@@ -539,7 +538,6 @@ class Search_By_Ingredient : AppCompatActivity() {
             button.setTypeface(button.typeface, Typeface.BOLD)
             //
             if (!addDbMeals.isEnabled || selected_card_list?.contains(index)!!) {
-                println("reached")
                 button.isEnabled = false
                 button.setText("Already Added to DataBase")
                 button.backgroundTintList = ColorStateList.valueOf(Color.BLACK)

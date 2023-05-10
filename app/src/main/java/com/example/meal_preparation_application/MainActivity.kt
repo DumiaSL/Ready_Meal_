@@ -72,9 +72,6 @@ class MainActivity : AppCompatActivity() {
                     mealDao.insert(mealLeblebiSoup)
 
                     val meals: List<Meals> = mealDao.getAll()
-                    for (meal_ in meals) {
-                        println(meal_)
-                    }
 
                     val snackbar = Snackbar.make(addMealsDb, "Successfully added",
                         Snackbar.LENGTH_LONG).setAction("Action", null)
