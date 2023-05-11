@@ -2,7 +2,7 @@
 
 Description:
 
-This is a recently started Android application built using Kotlin and Android Studio that allows users to search for food items and save the data using the Room library. The app makes use of the Retrofit library to fetch data from a food API and saves the data to the local database using the DAO interface.
+This is an Android application built using Kotlin and Android Studio that allows users to search for food items and save the data using the Room library. The project has been completed and is fully functional. The app makes use of the Retrofit library to fetch data from a food API and saves the data to the local database using the DAO interface.
 
 Features:
 
@@ -21,3 +21,7 @@ To run the app, you'll need to have Android Studio and the necessary dependencie
 
 Contributing:
 Contributions to the project are welcome! As this is a recently started project, there is plenty of scope for new ideas and improvements.
+
+![mer1](https://github.com/DumiaSL/Sliding-Puzzles/assets/90560618/6130283a-87a1-49b2-8752-5c5492add7f9)
+![merge_from_ofoct](https://github.com/DumiaSL/Sliding-Puzzles/assets/90560618/f5bf3c2a-fe43-4239-ac24-d5a4f81396cf)
+
