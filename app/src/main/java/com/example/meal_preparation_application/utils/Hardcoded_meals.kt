@@ -2,6 +2,7 @@ package com.example.meal_preparation_application.utils
 
 import com.example.meal_preparation_application.classes.Meals
 
+//hard coded meals with relevant details
 val mealSweetAndSourPork = Meals(
     name = "Sweet and Sour Pork",
     category = "Pork",

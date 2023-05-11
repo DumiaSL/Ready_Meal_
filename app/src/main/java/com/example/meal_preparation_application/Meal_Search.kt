@@ -56,27 +56,31 @@ class Meal_Search : AppCompatActivity() {
         setContentView(R.layout.activity_meal_search)
 
         mydialog = Dialog(this)
+
         // create the database
         val db = Room.databaseBuilder(this, AppDatabase::class.java,
             "mealdatabase").build()
         mealDao = db.mealDao()
 
+        // Retrieve data from previous screen
         var search_word = intent.getStringExtra("search_word").toString()
+
+        // Retrieve a view from the current layout by searching for its ID
         searchBar = findViewById(R.id.search_bar)
         var backIcon = findViewById<TextView>(R.id.backButton)
         SearchButton = findViewById(R.id.search_button)
         resultCount = findViewById(R.id.count_result)
         courseGRV = findViewById(R.id.grid_view_layout)
 
-        //
+        // list of what meals add to save
         selected_card_list = ArrayList()
 
-        //
+        // if there is data in saved Instance State , getting data
         if (savedInstanceState != null) {
             allMeals = savedInstanceState.getSerializable("allMeals") as ArrayList<Meals>
         }
 
-        //ini
+        // initialize screen
         searchBar.setText(search_word)
         resultCount.isVisible = false
 
@@ -90,12 +94,12 @@ class Meal_Search : AppCompatActivity() {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 //
                 search_fun()
-
                 return@OnKeyListener true
             }
             false
         })
 
+        // click event for search meal button
         SearchButton.setOnClickListener {
             allMeals.clear()
             search_fun()
@@ -111,15 +115,14 @@ class Meal_Search : AppCompatActivity() {
 
 
         if (searchBar.text.isNotEmpty()) {
-            //
+            // clear the saved meal in list
             selected_card_list.clear()
             //
             try {
                 // collecting all the JSON string
                 val stb = StringBuilder()
-                //
-                val url_string =
-                    "https://www.themealdb.com/api/json/v1/1/search.php?s=" + searchBar.text.toString()
+                // combind the strings and create link to send http request
+                val url_string = "https://www.themealdb.com/api/json/v1/1/search.php?s=" + searchBar.text.toString()
                 val url = URL(url_string)
                 val con: HttpURLConnection = url.openConnection() as HttpURLConnection
                 runBlocking {
@@ -183,6 +186,7 @@ class Meal_Search : AppCompatActivity() {
                 snackbar.show()
             }
         } else {
+            // when the empty text field
             allMeals.clear()
             createMiniCards()
             resultCount.isVisible = false
@@ -319,7 +323,7 @@ class Meal_Search : AppCompatActivity() {
             }
 
             extraMealSaveButton.setOnClickListener {
-                selected_card_list?.add(courseList[position].meal)
+                selected_card_list.add(courseList[position].meal)
                 //
                 runBlocking {
                     launch {
@@ -327,7 +331,7 @@ class Meal_Search : AppCompatActivity() {
                     }
                 }
 
-                //
+                //change the button functionality
                 extraMealSaveButton.isEnabled = false
                 extraMealSaveButton.setText("Already Added to DataBase")
                 extraMealSaveButton.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
@@ -441,7 +445,7 @@ class Meal_Search : AppCompatActivity() {
         return true
     }
 
-    //
+    // get the list of ingredient and measures
     private fun getList(jsonMealList: JSONObject, typeName: String): ArrayList<String> {
         val temp = ArrayList<String>()
         for (i in 1..20) {
@@ -451,7 +455,7 @@ class Meal_Search : AppCompatActivity() {
         return temp;
     }
 
-    //
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
@@ -459,7 +463,7 @@ class Meal_Search : AppCompatActivity() {
         outState.putSerializable("selected_card_list", selected_card_list)
     }
 
-    //
+
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         allMeals = savedInstanceState.getSerializable("allMeals") as ArrayList<Meals>
@@ -468,7 +472,7 @@ class Meal_Search : AppCompatActivity() {
         whenRotateSet()
     }
 
-    //
+    // when the screen rotate
     private fun whenRotateSet() {
         if (allMeals.size!=0){
             resultCount.isVisible = true
@@ -477,6 +481,7 @@ class Meal_Search : AppCompatActivity() {
         }
     }
 
+    //
     override fun onPause() {
         super.onPause()
         if (mydialog != null && mydialog!!.isShowing()) {

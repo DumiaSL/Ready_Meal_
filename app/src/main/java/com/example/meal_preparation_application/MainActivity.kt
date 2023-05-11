@@ -26,26 +26,29 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // create the database
-        val db = Room.databaseBuilder(this, AppDatabase::class.java,
-            "mealdatabase").build()
+        // Create the database
+        val db = Room.databaseBuilder(this, AppDatabase::class.java, "mealdatabase").build()
         val mealDao = db.mealDao()
 
+        // Retrieve a view from the current layout by searching for its ID
         val addMealsDb = findViewById<Button>(R.id.add_button)
         val SB_igredient=findViewById<Button>(R.id.search_by_ing_button)
         var SB_meal = findViewById<Button>(R.id.search_by_meal_button)
         searchBar = findViewById<EditText>(R.id.search_bar)
 
+        // Click event for search by meal from ingredient
         SB_igredient.setOnClickListener{
             val intent = Intent(this, Search_By_Ingredient::class.java)
             startActivity(intent)
         }
 
+        // Click event for search by offline meal from local memory
         SB_meal.setOnClickListener{
             val intent = Intent(this, Search_for_Meal::class.java)
             startActivity(intent)
         }
 
+        // On changed listener for text field.when start to type (for 1 character) its change the screen to search meal  from api screen
         searchBar.addTextChangedListener(object : TextWatcher {
 
             override fun afterTextChanged(s: Editable) {}
@@ -62,6 +65,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        // On click event for add meal button.Its saving the hardcoded meal to local memory
         addMealsDb.setOnClickListener {
             runBlocking {
                 launch {
@@ -73,12 +77,10 @@ class MainActivity : AppCompatActivity() {
 
                     val meals: List<Meals> = mealDao.getAll()
 
-                    val snackbar = Snackbar.make(addMealsDb, "Successfully added",
-                        Snackbar.LENGTH_LONG).setAction("Action", null)
+                    val snackbar = Snackbar.make(addMealsDb, "Successfully added", Snackbar.LENGTH_LONG).setAction("Action", null)
                     val snackbarView = snackbar.view
                     snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
-                    val textView =
-                        snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+                    val textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
                     textView.setTextColor(Color.BLACK)
                     textView.setTypeface(null, Typeface.BOLD)
                     textView.textSize = 16f
@@ -86,7 +88,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
 
     private fun changePage() {

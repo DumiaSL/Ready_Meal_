@@ -4,11 +4,9 @@ import android.graphics.drawable.BitmapDrawable
 import com.example.meal_preparation_application.classes.Meals
 
 //source - https://www.geeksforgeeks.org/android-gridview-in-kotlin/
-// on below line we are creating a modal class.
+// Declares a data class named GridViewModal.
+// It has two properties: a meal object and a bitmapDrawable object.
 data class GridViewModal(
-    // we are creating a modal class with 2 member
-    // one is course name as string and
-    // other course img as int.
-    val meal: Meals,
-    var bitmapDrawable: BitmapDrawable?
+    val meal: Meals, // Represents a meal object from the Meals class.
+    var bitmapDrawable: BitmapDrawable? // Represents a bitmapDrawable object that will hold a bitmap image for this meal.
 )
