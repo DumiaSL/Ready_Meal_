@@ -9,10 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -20,17 +18,13 @@ import com.example.meal_preparation_application.R
 
 //source - https://www.geeksforgeeks.org/android-gridview-in-kotlin/
 
-// on below line we are creating an
-// adapter class for our grid view.
-internal class GridRVAdeptor(
-    // on below line we are creating two
-    // variables for course list and context
-    private val courseList: List<GridViewModal>,
+internal class GridAdeptor(
+
+    private val courseList: List<GridViewMealModal>,
     private val context: Context
 ) :
     BaseAdapter() {
-    // in base adapter class we are creating variables
-    // for layout inflater, course image view and course text view.
+
     private var layoutInflater: LayoutInflater? = null
     private lateinit var minicard_name: TextView
     private lateinit var minicard_category: TextView
@@ -53,32 +47,30 @@ internal class GridRVAdeptor(
 
     // in below function we are getting individual item of grid view.
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        var convertView = convertView
+        var contentView = convertView
         // on blow line we are checking if layout inflater
         // is null, if it is null we are initializing it.
         if (layoutInflater == null) {
             layoutInflater =
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         }
-        // on the below line we are checking if convert view is null.
-        // If it is null we are initializing it.
-        if (convertView == null) {
-            // on below line we are passing the layout file
-            // which we have to inflate for each item of grid view.
-            convertView = layoutInflater!!.inflate(R.layout.minicard_view, null)
-        }
-        // on below line we are initializing our course image view
-        // and course text view with their ids.
-        minicard_image = convertView!!.findViewById(R.id.idIVCourse)
-        minicard_name = convertView.findViewById(R.id.meal_name)
-        minicard_category = convertView.findViewById(R.id.meal_cat)
-        // on below line we are setting image for our course image view.
 
-        // on below line we are setting text in our course text view.
+        // If it is null we are initializing it.
+        if (contentView == null) {
+            // on below line we are passing the layout file
+            contentView = layoutInflater!!.inflate(R.layout.minicard_view, null)
+        }
+        // on below line we are initializing
+        minicard_image = contentView!!.findViewById(R.id.idIVCourse)
+        minicard_name = contentView.findViewById(R.id.meal_name)
+        minicard_category = contentView.findViewById(R.id.meal_cat)
+
+
         minicard_name.setText(courseList[position].meal.name)
         minicard_category.setText(courseList[position].meal.category)
+        // loading image
         var bitmapDrawable: BitmapDrawable? = null
-        Glide.with(convertView)
+        Glide.with(contentView)
             .asBitmap()
             .load(courseList[position].meal.mealThumb)
             .into(object : CustomTarget<Bitmap>() {
@@ -100,7 +92,6 @@ internal class GridRVAdeptor(
                     // clear it here as you can no longer have the bitmap
                 }
             })
-        // at last we are returning our convert view.
-        return convertView
+        return contentView
     }
 }

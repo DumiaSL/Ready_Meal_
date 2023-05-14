@@ -10,8 +10,6 @@ import android.graphics.text.LineBreaker
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.View
@@ -23,8 +21,8 @@ import androidx.core.view.isVisible
 import androidx.room.Room
 import com.example.meal_preparation_application.classes.AppDatabase
 import com.example.meal_preparation_application.classes.Meals
-import com.example.meal_preparation_application.utils.GridRVAdeptor
-import com.example.meal_preparation_application.utils.GridViewModal
+import com.example.meal_preparation_application.utils.GridAdeptor
+import com.example.meal_preparation_application.utils.GridViewMealModal
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -32,12 +30,11 @@ import java.lang.Integer.min
 
 class Search_for_Meal : AppCompatActivity() {
     // on below line we are creating
-    // variables for grid view and course list
     lateinit var courseGRV: GridView
     lateinit var searchbarTextField : EditText
     lateinit var resultCount : TextView
     lateinit var search_button : Button
-    lateinit var courseList: List<GridViewModal>
+    lateinit var courseList: List<GridViewMealModal>
     var mydialog: Dialog? = null
     lateinit var selectedMeals: MutableList<Meals>
     var bitmapDrawable: BitmapDrawable? = null
@@ -102,26 +99,22 @@ class Search_for_Meal : AppCompatActivity() {
         selectedMeals.clear()
 
         if (onChangeWord.isNotEmpty()){
-            //
+            // checking for all meal in database
             for (meal in allMeals) {
-                //
-                if (meal.name?.contains(
-                        onChangeWord,
-                        ignoreCase = true
-                    ) == true
+                // filtering meal base on meal name
+                if (meal.name?.contains(onChangeWord, ignoreCase = true) == true
                 ) mealsBasedOnName.add(meal)
 
-                //
+                // filtering meal base on meal ingredients
                 for (ingredient in meal.ingredients!!) {
                     if (ingredient.contains(onChangeWord, ignoreCase = true)) {
                         mealsBasedOnIngredient.add(meal)
                         break
                     }
                 }
-                selectedMeals =
-                    (mealsBasedOnIngredient + mealsBasedOnName).distinct().toMutableList()
+                selectedMeals = (mealsBasedOnIngredient + mealsBasedOnName).distinct().toMutableList()
             }
-            //
+            // creating mini cards
             createMiniCards()
         }else{
             //Toast Message
@@ -130,8 +123,7 @@ class Search_for_Meal : AppCompatActivity() {
                     .setAction("Action", null)
             val snackbarView = snackbar.view
             snackbarView.setBackgroundColor(Color.parseColor("#FFD200"))
-            val textView =
-                snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+            val textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
             textView.setTextColor(Color.BLACK)
             textView.setTypeface(null, Typeface.BOLD)
             textView.textSize = 16f
@@ -140,24 +132,22 @@ class Search_for_Meal : AppCompatActivity() {
     }
 
     private fun createMiniCards() {
-        courseList = ArrayList<GridViewModal>()
+        courseList = ArrayList<GridViewMealModal>()
         resultCount.isVisible = true
         resultCount.text = "Total Results Found : " + selectedMeals.size.toString()
-        //
+
+
         if (searchbarTextField.text.isEmpty()){
             resultCount.isVisible = false
             this.selectedMeals.clear()
         }
-        // on below line we are adding data to
-        // our course list with image and course name.
+
         for (savedMeal in this.selectedMeals) {
-            courseList = courseList + GridViewModal(savedMeal,bitmapDrawable)
+            courseList = courseList + GridViewMealModal(savedMeal,bitmapDrawable)
         }
 
 
-        // on below line we are initializing our course adapter
-        // and passing course list and context.
-        val courseAdapter = GridRVAdeptor(courseList = courseList, this@Search_for_Meal)
+        val courseAdapter = GridAdeptor(courseList = courseList, this@Search_for_Meal)
 
         // on below line we are setting adapter to our grid view.
         courseGRV.adapter = courseAdapter
@@ -279,7 +269,6 @@ class Search_for_Meal : AppCompatActivity() {
                     }
                 }
 
-                //
                 for (index in 0 until min(filteredList_ing.size, filteredList_me.size)) {
                     val temp_ing = TextView(this)
                     temp_ing.id = View.generateViewId()
@@ -314,13 +303,13 @@ class Search_for_Meal : AppCompatActivity() {
             }
     }
 
-    //
+    // when screen rotate saving data on save instance state
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putSerializable("selectedMeals", selectedMeals as ArrayList)
     }
 
-    //
+    // when screen rotate getting saved instance data
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         selectedMeals = savedInstanceState.getSerializable("selectedMeals") as MutableList<Meals>
